@@ -1,4 +1,5 @@
 import React from 'react'
+import homeimg from "../images/img1.png";
 const Home = () => {
   return (
     <>
@@ -11,7 +12,7 @@ const Home = () => {
 <button className='bg-indigo-700 text-white px-3 py-2 rounded-[10px] hover:bg-blue-600 hover:text-slate-950  '>Visit Courses</button>
 </div>
 </div>
-   <img className='w-[630px] pt-0' src="https://o.remove.bg/downloads/2790741c-81a5-4f4e-b998-f72f4957d404/img-1-removebg-preview.png" alt="" />
+<img className='w-[630px] pt-0' src={homeimg} alt="" />
     </div>
     </>
   )
