@@ -24,7 +24,7 @@ const Home = () => {
 
 <div className='px-36 py-[10px] w-full '> 
     <h1 className='mt-3  text-center capitalize text-5xl font-extrabold text-indigo-900'>Popular Goals</h1>
-    <hr className='w-[20%] m-2 h-1 mx-auto bg-slate-700 rounded'/>
+    <hr className='w-[25%] m-2 h-1 mx-auto bg-slate-700 rounded'/>
     {/* cards */}
     <div className="grid grid-cols-4 justify-items-center">
 
@@ -32,20 +32,26 @@ const Home = () => {
       const{image,name}=curElem;
       return(
         <>
-      <div className='py-10 m-2 w-[170px]  '>
-      <div className='rounded  overflow-hidden shadow-lg max-w-sm px-2 pb-2 h-[200px] bg-slate-300  '>
+      <div className='py-10 m-2 w-[170px] '>
+
+      <div className='container1 rounded overflow-hidden  shadow-lg max-w-sm px-2 pb-2 h-[200px]  bg-slate-300  hover:bg-slate-800'>
        
   <img  src={image} alt="" className='w-[300px] h-[120px]'/>
 
-      <div className='font-extrabold text-2xl mb-2 bg-slate-300 text-center text-indigo-800 py-2'>
+      <div className='container2 font-extrabold text-2xl mb-2 bg-slate-300 text-center text-indigo-800 py-2 '>
      {name}
       </div>
       </div>
-    </div>
+      </div>
     </>)
-      })};
- </div>
+      })}
+   
+    </div>
+    <div className='flex justify-end '>
+      <button className='px-4 py-2 bg-slate-400  rounded-[10px] border border-black hover:text-white  hover:bg-slate-800'>See All Goals</button>
+      </div>    
     </div> 
+
 
     </>
   )

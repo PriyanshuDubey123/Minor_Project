@@ -11,5 +11,10 @@
     background-color: rgb(248, 250, 252) ;
 }
 img{
-background-color: transparent;
-}
+    background-color: transparent;
+    } 
+
+.container1:hover > .container2 {
+    background-color: rgb(30 41 59 / var(--tw-bg-opacity));
+    color: #fff;
+  }
