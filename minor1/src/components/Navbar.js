@@ -1,13 +1,18 @@
 import React from 'react'
 import {NavLink} from 'react-router-dom'
+import logo from "../images/logo.png";
+
 const navbar = () => {
   return (
     <>
-    <nav className='w-full md:h-14 bg-slate-50 md:flex justify-between items-center px-4 md:px-5'>
-      <NavLink className="text-2xl font-bold  text-indigo-700 w-10" to="/">
-      Ulearn
+    <nav className='w-full md:h-14 bg-gray-50 md:flex justify-between items-center px-4 md:px-5'>
+      {/* <div className='flex-col pt-6'> */}
+    <img class="w-14 h-14 pt-1" src={logo} alt="" />
+      {/* </div> */}
+      <NavLink className="text-2xl  pt-0 font-extrabold  text-purple-900 border-black " to="/">
+      ULearn
       </NavLink>
-      <ul className='flex font-semibold text-[18px] text-indigo-700 w-[1200px] pt-1'>
+      <ul className='flex font-semibold text-[18px] text-indigo-700 w-[1200px] pt-0'>
         <NavLink className='mx-[10px] cursor-pointer hover:text-sky-950' to="/courses">Courses</NavLink>
         <NavLink className='mx-[10px] cursor-pointer hover:text-sky-950' to="/about">About Us</NavLink> 
         <NavLink className='mx-[10px] cursor-pointer hover:text-sky-950' to="/contact">Contact Us</NavLink> 
