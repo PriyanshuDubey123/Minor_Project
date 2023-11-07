@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import About from './components/About';
 import Contact from './components/Contact';
 import Course from './components/Course';
+import UserProfile from './components/UserProfile';
 import {
     BrowserRouter as Router,
     Routes,
@@ -13,7 +14,7 @@ import {
 const App = () => {
   return (
     <>
-    <Router>
+    {/* <Router>
     <Navbar/>
     <Routes>
     <Route exact path="/" element={<Home/>}></Route>
@@ -21,7 +22,8 @@ const App = () => {
     <Route exact path="/about" element={<About/>}></Route>
     <Route exact path="/contact" element={<Contact/>}></Route>
     </Routes>
-    </Router>
+    </Router> */}
+    <UserProfile/>
     </>
   )
 }

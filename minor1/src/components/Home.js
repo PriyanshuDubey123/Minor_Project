@@ -37,7 +37,7 @@ const Home = () => {
 
       <div className='container1 rounded overflow-hidden  shadow-lg max-w-sm px-2 pb-2 h-[200px]  bg-slate-300  hover:bg-slate-800'>
        
-  <img  src={image} alt="" className='w-[300px] h-[120px]'/>
+      <img  src={image} alt="" className='w-[300px] h-[120px]'/>
 
       <div className='container2 font-extrabold text-2xl mb-2 bg-slate-300 text-center text-indigo-800 py-2 '>
      {name}
