@@ -7,7 +7,6 @@ const Goals=[
         image:"https://static.uacdn.net/production/_next/static/images/home/goalIcons/iit_jee.svg?q=75&auto=format%2Ccompress&w=96",
         name:"IIT JEE"
     },
-    
     {
         image:"https://static.uacdn.net/production/_next/static/images/home/goalIcons/neet_ug.svg?q=75&auto=format%2Ccompress&w=96",
         name:"NEET UG"
