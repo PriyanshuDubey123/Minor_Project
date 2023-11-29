@@ -10,7 +10,7 @@ const navbar = () => {
     <img class="w-14 h-14 pt-1" src={logo} alt="" />
       {/* </div> */}
       <NavLink className="text-2xl  pt-0 font-extrabold  text-purple-900 border-black " to="/">
-      ULearn
+      StudyMate
       </NavLink>
       <ul className='flex font-semibold text-[18px] text-indigo-700 w-[1200px] pt-0'>
         <NavLink className='mx-[10px] cursor-pointer hover:text-sky-950' to="/courses">Courses</NavLink>
