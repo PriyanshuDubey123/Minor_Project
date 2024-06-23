@@ -1,0 +1,11 @@
+{
+  "users": [
+    {
+      "email": "dubey@gmail.com",
+      "password": "Hello@123",
+      "addresses": [],
+      "role": "user",
+      "id": 1
+    }
+  ]
+}

@@ -3,12 +3,12 @@ import homeimg from "../images/imghome.png";
 import logo from "../images/logo.png";
 import Goals from './GoalsApi';
 import {Link} from 'react-router-dom';
+import Navbar from './Navbar';
 
-
-const Home = () => {
+const LandingPage = () => {
   return (
     <>
-
+    <Navbar/>
     {/* Front Section */}
     <div className='flex h-[660px] w-full justify-center text-center pt-3 bg-slate-50'> 
     <div className='flex-col pt-[230px] pl-4 text-center text-sky-950'>
@@ -155,4 +155,4 @@ const Home = () => {
     </>
   )
 }
-export default Home
+export default LandingPage
