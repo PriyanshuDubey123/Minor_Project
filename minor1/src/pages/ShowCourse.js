@@ -18,7 +18,7 @@ function ShowCourse() {
   useEffect(() => {
     const fetchCourseData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/courses/getcourse/${id}`);
+        const response = await axios.get(`https://minor-backend-50m4.onrender.com/api/courses/getcourse/${id}`);
         console.log(response.data.course);
         setCourseData(response.data.course);
         setEdit(response.data.course.underReview || response.data.course.isPublished);
@@ -38,7 +38,7 @@ function ShowCourse() {
     }
 
     try {
-      const response = await axios.delete(`http://localhost:8080/api/courses/deletevideo/${id}/${videoId}`);
+      const response = await axios.delete(`https://minor-backend-50m4.onrender.com/api/courses/deletevideo/${id}/${videoId}`);
       console.log('Delete Response:', response.data);
       setCourseData((prevData) => ({
         ...prevData,
@@ -163,7 +163,7 @@ function UploadCourseForm({ courseId, setCourseData,courseData }) {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/courses/upload/videos/${courseId}`,
+        `https://minor-backend-50m4.onrender.com/api/courses/upload/videos/${courseId}`,
         formData,
         {
           onUploadProgress: (progressEvent) => {
@@ -176,7 +176,7 @@ function UploadCourseForm({ courseId, setCourseData,courseData }) {
       console.log('Upload Response:', response.data);
 
       // Fetch the updated course data to ensure the video ID is available
-      const updatedCourseResponse = await axios.get(`http://localhost:8080/api/courses/getcourse/${courseId}`);
+      const updatedCourseResponse = await axios.get(`https://minor-backend-50m4.onrender.com/api/courses/getcourse/${courseId}`);
       setCourseData(updatedCourseResponse.data.course);
 
       toast.success('Video uploaded successfully');
@@ -200,8 +200,8 @@ function UploadCourseForm({ courseId, setCourseData,courseData }) {
       toast.error('Please upload the course content');
       return;}
 
-      await axios.put(`http://localhost:8080/api/courses/review/${courseId}`);
-      const updatedCourseResponse = await axios.get(`http://localhost:8080/api/courses/getcourse/${courseId}`);
+      await axios.put(`https://minor-backend-50m4.onrender.com/api/courses/review/${courseId}`);
+      const updatedCourseResponse = await axios.get(`https://minor-backend-50m4.onrender.com/api/courses/getcourse/${courseId}`);
       setCourseData(updatedCourseResponse.data.course);
       toast.success('Course is under Review!');
     } catch (err) {

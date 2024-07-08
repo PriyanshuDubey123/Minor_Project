@@ -106,7 +106,7 @@ const AddCourse = () => {
       formData.append('thumbnail', values.thumbnail);
 
       try {
-        const response = await axios.post(`http://localhost:8080/api/courses/upload/${user.id}`, formData);
+        const response = await axios.post(`https://minor-backend-50m4.onrender.com/api/courses/upload/${user?.id}`, formData);
         console.log(response);
         setIsSubmitting(false);
         setShowModal(true);

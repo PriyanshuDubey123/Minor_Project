@@ -51,7 +51,7 @@ const handleRemove = (itemId) =>{
 const handleOrder = (e) =>{
     console.log(user);
   if( paymentMethod){
-  const order = {items,totalAmount,totalItems,user:user.id,paymentMethod, status:'pending'};
+  const order = {items,totalAmount,totalItems,user:user?.id,paymentMethod, status:'pending'};
   dispatch(createOrderAsync(order));
   }
   else{

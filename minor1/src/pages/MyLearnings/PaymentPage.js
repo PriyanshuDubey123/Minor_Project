@@ -20,7 +20,7 @@ const PaymentPage = () => {
     useEffect(() => {
         const fetchCourseDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/courses/getcourse/${id}`);
+                const response = await axios.get(`https://minor-backend-50m4.onrender.com/api/courses/getcourse/${id}`);
                 console.log(response.data.course);
                 setCourse(response.data.course);
             } catch (error) {
@@ -49,11 +49,11 @@ const PaymentPage = () => {
     const getSessionId = async () => {
         try {
           const res = await axios.get(
-            "http://localhost:8080/api/cashfree/payment",
+            "https://minor-backend-50m4.onrender.com/api/cashfree/payment",
             {
               params: {
                 amount: discountedPrice(course),
-                userId: user.id,
+                userId: user?.id,
                 courseId: course._id,
                 creatorId: course.creatorId._id
               },

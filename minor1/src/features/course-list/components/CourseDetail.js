@@ -88,7 +88,7 @@ export default function CourseDetail() {
 
 
   useEffect(()=>{
-   if(course?.enrolledStudents.includes(user.id)){
+   if(course?.enrolledStudents.includes(user?.id)){
     setEnrolled(true);
    }
   },[]);
@@ -96,7 +96,7 @@ export default function CourseDetail() {
 
   const handleSave = (e) => {
     if (items.findIndex((item) => item.course._id === course._id) < 0) {
-      const newItem = { quantity: 1, course: course._id, user: user.id };
+      const newItem = { quantity: 1, course: course._id, user: user?.id };
       dispatch(addToCartAsync(newItem));
     } else console.log("already added");
   };
@@ -115,7 +115,7 @@ export default function CourseDetail() {
 
       setTimeout(async () => { // Delay the API call by 3 seconds
         try {
-          const response = await fetch(`http://localhost:8080/api/courses/enroll/${course._id}/${user.id}`, {
+          const response = await fetch(`https://minor-backend-50m4.onrender.com/api/courses/enroll/${course._id}/${user?.id}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

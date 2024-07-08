@@ -32,7 +32,7 @@ const MyCourses = () => {
   useEffect(() => {
     const fetchPurchasedCourses = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/users/purchased-courses/${user.id}`);
+        const response = await axios.get(`https://minor-backend-50m4.onrender.com/users/purchased-courses/${user?.id}`);
         console.log(response.data);
         setCourses(response.data);
       } catch (error) {
@@ -43,7 +43,7 @@ const MyCourses = () => {
     };
 
     fetchPurchasedCourses();
-  }, [user.id]);
+  }, [user?.id]);
 
   const handleContinueLearning = (course) => {
     navigate(`/home/learning-panel/${course._id}`, { state: { course } });

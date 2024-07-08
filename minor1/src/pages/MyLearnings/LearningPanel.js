@@ -100,7 +100,7 @@ const LearningPanel = () => {
             </button>
             <div className="flex justify-center">
               <ReactPlayer
-                url={`http://localhost:8080/video?videoUrl=${encodeURIComponent(selectedVideo)}`}
+                url={`https://minor-backend-50m4.onrender.com/video?videoUrl=${encodeURIComponent(selectedVideo)}`}
                 controls
                 width="100%"
                 height="60vh"

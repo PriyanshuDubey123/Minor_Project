@@ -1,7 +1,7 @@
 export function addToCart(item) {
   console.log(item);
   return new Promise(async (resolve) =>{
-    const response  = await fetch('http://localhost:8080/cart',{
+    const response  = await fetch('https://minor-backend-50m4.onrender.com/cart',{
       method:'POST',
       body: JSON.stringify(item),
       headers:{'content-type':'application/json'}
@@ -16,7 +16,7 @@ export function addToCart(item) {
 
 export function fetchItemsByUserId(userid) {
   return new Promise(async (resolve) =>{
-    const response  = await fetch('http://localhost:8080/cart?user='+userid)
+    const response  = await fetch('https://minor-backend-50m4.onrender.com/cart?user='+userid)
     const data = await response.json()
     resolve({data});
   }
@@ -25,7 +25,7 @@ export function fetchItemsByUserId(userid) {
   
 export function updateCart(update) {
   return new Promise(async (resolve) =>{
-    const response  = await fetch('http://localhost:8080/cart/'+update.id,{
+    const response  = await fetch('https://minor-backend-50m4.onrender.com/cart/'+update.id,{
       method:'PATCH',
       body: JSON.stringify(update),
       headers:{'content-type':'application/json'}
@@ -38,7 +38,7 @@ export function updateCart(update) {
   
 export function deleteItemFromCart(itemId) {
   return new Promise(async (resolve) =>{
-    const response  = await fetch('http://localhost:8080/cart/'+itemId,{
+    const response  = await fetch('https://minor-backend-50m4.onrender.com/cart/'+itemId,{
       method:'DELETE',
       headers:{'content-type':'application/json'}
     })

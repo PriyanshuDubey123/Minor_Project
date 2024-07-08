@@ -32,7 +32,7 @@ export default function UserProfile() {
   const courses = useSelector(selectAllCourses);
 
   useEffect(() => {
-    dispatch(fetchLoggedInUserOrdersAsync(user.id));
+    dispatch(fetchLoggedInUserOrdersAsync(user?.id));
   }, []);
 
   return (

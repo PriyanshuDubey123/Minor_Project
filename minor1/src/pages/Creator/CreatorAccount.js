@@ -28,7 +28,7 @@ const CreatorAccount = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/creator/get/creator/courses/${user.id}`, {
+        const response = await axios.get(`https://minor-backend-50m4.onrender.com/api/creator/get/creator/courses/${user?.id}`, {
           params: { filters, month: selectedMonth }
         });
         setData(response.data);
@@ -38,7 +38,7 @@ const CreatorAccount = () => {
       }
     };
     fetchData();
-  }, [user.id, filters, selectedMonth]);
+  }, [user?.id, filters, selectedMonth]);
 
   const renderShimmerEffect = () => (
     <div className="p-10">

@@ -19,7 +19,7 @@ function PaymentReceipt() {
     const [receiptContent, setReceiptContent] = useState('');
     useEffect(() => {
         
-        let  url = `http://localhost:8080/api/cashfree/order/status/?orderId=${order_id}`;
+        let  url = `https://minor-backend-50m4.onrender.com/api/cashfree/order/status/?orderId=${order_id}`;
         
         
         

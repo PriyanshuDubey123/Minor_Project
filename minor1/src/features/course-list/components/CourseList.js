@@ -110,7 +110,7 @@ export default function CourseList() {
 
   useEffect(() => {
     const pagination = { _page: page, _limit: ITEMS_PER_PAGE };
-    dispatch(fetchCoursesByFiltersAsync({ filter, sort, pagination, userId:user.id }));
+    dispatch(fetchCoursesByFiltersAsync({ filter, sort, pagination, userId:user?.id }));
   }, [dispatch, filter, sort, page]);
 
   useEffect(() => {

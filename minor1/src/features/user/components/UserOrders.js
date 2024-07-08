@@ -12,7 +12,7 @@ export default function UserOrders() {
   const orders = useSelector(selectUserOrders);
 
   useEffect(()=>{
-    dispatch(fetchLoggedInUserOrdersAsync(user.id));
+    dispatch(fetchLoggedInUserOrdersAsync(user?.id));
   },[])
 
   return (

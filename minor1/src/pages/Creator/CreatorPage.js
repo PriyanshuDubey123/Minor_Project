@@ -15,12 +15,12 @@ const CreatorPage = () => {
   const user = useSelector(selectUserInfo);
   const [showModal, setShowModal] = useState(false);
   // Ensure user data is available
-  if (!user || !user.id) {
+  if (!user || !user?.id) {
     return <div>Loading...</div>;
   }
 
   // if(user.creator){
-  //   navigate(`/creator-account/${user.id}`);
+  //   navigate(`/creator-account/${user?.id}`);
   // }
 
   const initialValues = {
@@ -45,9 +45,9 @@ const CreatorPage = () => {
 
   const onSubmit = async (values) => {
     try {
-      await axios.post(`http://localhost:8080/api/creator/become-creator/${user.id}`, values);
+      await axios.post(`https://minor-backend-50m4.onrender.com/api/creator/become-creator/${user?.id}`, values);
       toast.success('You are now a creator!');
-     dispatch(fetchLoggedInUserAsync(user.id))
+     dispatch(fetchLoggedInUserAsync(user?.id))
      setShowModal(true);
     } catch (error) {
       console.error(error);

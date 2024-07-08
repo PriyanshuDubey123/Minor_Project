@@ -2,7 +2,7 @@
 export function createUser(userData) {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch('http://localhost:8080/auth/signup', {
+      const response = await fetch('https://minor-backend-50m4.onrender.com/auth/signup', {
         method: 'POST',
         body: userData, // assuming userData is already a FormData object
       });
@@ -19,7 +19,7 @@ export function loginUser(loginInfo) {
   return new Promise(async (resolve,reject) =>{
    
     try{
-      const response  = await fetch('http://localhost:8080/auth/login',{
+      const response  = await fetch('https://minor-backend-50m4.onrender.com/auth/login',{
         method:'POST',
         body: JSON.stringify(loginInfo),
         headers:{'content-type':'application/json'}
