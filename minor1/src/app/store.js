@@ -4,6 +4,7 @@ import userReducer from '../features/user/userSlice';
 import courseReducer from '../features/course-list/CourseSlice';
 import cartReducer from '../features/cart/cartSlice';
 import orderReducer from '../features/order/orderSlice';
+import ToggleReducer from '../features/ToggleSlice';
 
 export const store = configureStore({
     reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
       course: courseReducer,
       cart:cartReducer,
       order: orderReducer,
+      toggle:ToggleReducer
     },
   });

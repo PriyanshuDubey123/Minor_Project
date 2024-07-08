@@ -1,31 +1,42 @@
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { selectLoggedInUser, createUserAsync} from "../authSlice";
-
+import { selectLoggedInUser, createUserAsync } from "../authSlice";
 import { Link, Navigate } from "react-router-dom";
 
 export default function SignUp() {
   const dispatch = useDispatch();
-  
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  console.log(errors);
-
   const user = useSelector(selectLoggedInUser);
+
+  const onSubmit = async (data) => {
+    console.log(data);
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("username", data.username);
+    formData.append("role", "user");
+
+    if (data.profilePicture.length > 0) {
+      formData.append("profilePicture", data.profilePicture[0]);
+    }
+console.log(formData)
+    // dispatch the action
+    dispatch(createUserAsync(formData));
+  };
 
   return (
     <>
-     {user && <Navigate to="/home" replace={true}></Navigate>}
+      {user && <Navigate to="/home" replace={true} />}
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
             className="mx-auto h-10 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+            src="https://i.pinimg.com/736x/f2/d6/7d/f2d67d8b0b75a420095546ab6036614d.jpg"
             alt="Your Company"
           />
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
@@ -37,9 +48,7 @@ export default function SignUp() {
           <form
             noValidate
             className="space-y-6"
-            onSubmit={handleSubmit((data) => {
-              dispatch(createUserAsync({email:data.email, password: data.password, addresses:[], role:'user'  }))
-            })}
+            onSubmit={handleSubmit(onSubmit)}
           >
             <div>
               <label
@@ -51,16 +60,38 @@ export default function SignUp() {
               <div className="mt-2">
                 <input
                   id="email"
-                  {...register("email", { required: "email is required",
-                  pattern: {
-                    value: /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/gi,
-                    message: "email is not valid",
-                  }})}
+                  {...register("email", {
+                    required: "email is required",
+                    pattern: {
+                      value: /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/gi,
+                      message: "email is not valid",
+                    },
+                  })}
                   type="email"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
                 {errors.email && (
                   <p className=" text-red-500 ">{errors.email.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Username
+              </label>
+              <div className="mt-2">
+                <input
+                  id="username"
+                  {...register("username", { required: "username is required" })}
+                  type="text"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+                {errors.username && (
+                  <p className=" text-red-500 ">{errors.username.message}</p>
                 )}
               </div>
             </div>
@@ -84,7 +115,8 @@ export default function SignUp() {
                       message: `- at least 8 characters\n
                       - must contain at least 1 uppercase letter, 1 lowercase letter, and 1 number\n
                       - Can contain special characters`,
-                    }})}
+                    },
+                  })}
                   type="password"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
@@ -97,7 +129,7 @@ export default function SignUp() {
             <div>
               <div className="flex items-center justify-between">
                 <label
-                  htmlFor="password"
+                  htmlFor="confirmPassword"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Confirm Password
@@ -108,7 +140,8 @@ export default function SignUp() {
                   id="confirmPassword"
                   {...register("confirmPassword", {
                     required: "Confirm Password is required",
-                    validate: (value, formValues)=> value === formValues.password || 'password is not matching'
+                    validate: (value, formValues) =>
+                      value === formValues.password || 'password is not matching',
                   })}
                   type="password"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -118,6 +151,23 @@ export default function SignUp() {
                     {errors.confirmPassword.message}
                   </p>
                 )}
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="profilePicture"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Profile Picture
+              </label>
+              <div className="mt-2">
+                <input
+                  id="profilePicture"
+                  {...register("profilePicture")}
+                  type="file"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
               </div>
             </div>
 

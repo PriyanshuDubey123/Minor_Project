@@ -33,9 +33,9 @@ import Pagination from "../../common/Pagination";
 import { addToCartAsync, selectItems } from "../../cart/cartSlice";
 import { selectLoggedInUser } from "../../auth/authSlice";
 import CourseGrid from "./CourseGrid";
+import { selectUserInfo } from "../../user/userSlice";
 
 const sortOptions = [
-  { name: "Best Rating", sort: "rating", current: false },
   { name: "Price: Low to High", sort: "price", order: "asc", current: false },
   { name: "Price: High to Low", sort: "price", order: "desc", current: false },
 ];
@@ -53,9 +53,11 @@ export default function CourseList() {
   const [page, setPage] = useState(1);
   const limit = 10;
 
- 
+  const user = useSelector(selectUserInfo);
 
-  const courses = useSelector(selectAllCourses);
+  
+  let courses = useSelector(selectAllCourses);
+     
   const totalItems = useSelector(selectTotalItems);
 
   const languages = useSelector(selectLanguages);
@@ -108,7 +110,7 @@ export default function CourseList() {
 
   useEffect(() => {
     const pagination = { _page: page, _limit: ITEMS_PER_PAGE };
-    dispatch(fetchCoursesByFiltersAsync({ filter, sort, pagination }));
+    dispatch(fetchCoursesByFiltersAsync({ filter, sort, pagination, userId:user.id }));
   }, [dispatch, filter, sort, page]);
 
   useEffect(() => {
@@ -171,7 +173,7 @@ export default function CourseList() {
                                   option.current
                                     ? "font-medium text-gray-900"
                                     : "text-gray-500",
-                                  active ? "bg-gray-100" : "",
+                                  active ? "bg-gray-100 cursor-pointer" : "",
                                   "block px-4 py-2 text-sm"
                                 )}
                               >

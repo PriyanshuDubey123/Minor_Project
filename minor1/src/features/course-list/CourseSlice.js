@@ -20,8 +20,8 @@ export const fetchAllCoursesAsync = createAsyncThunk(
 
 export const fetchCoursesByFiltersAsync = createAsyncThunk(
   'course/fetchCoursesByFilters',
-  async ({filter,sort,pagination,admin}) => {
-    const response = await fetchCoursesByFilters(filter,sort,pagination,admin);
+  async ({filter,sort,pagination,userId}) => {
+    const response = await fetchCoursesByFilters(filter,sort,pagination,userId);
     return response.data;
   }
 );

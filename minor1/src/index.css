@@ -16,7 +16,7 @@
    border-0 border-r-2 border-blue-700  fixed
 }
 .small-sidebar{
-    @apply  h-full w-[5.8rem] rounded p-4  border transition-all duration-500 border-0 border-r-2 border-blue-700 fixed
+    @apply  h-full w-[5.8rem] rounded p-4  border transition-all duration-500 border-0 border-r-2 border-blue-700 fixed 
 }
 .smallmode{
     @apply left-[5.8rem] transition-all duration-500

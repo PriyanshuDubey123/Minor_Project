@@ -1,16 +1,19 @@
 
 export function createUser(userData) {
-  return new Promise(async (resolve) =>{
-    const response  = await fetch('http://localhost:8080/auth/signup',{
-      method:'POST',
-      body: JSON.stringify(userData),
-      headers:{'content-type':'application/json'}
-    })
-    const data = await response.json()
-    resolve({data});
-  }
-  );
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch('http://localhost:8080/auth/signup', {
+        method: 'POST',
+        body: userData, // assuming userData is already a FormData object
+      });
+      const data = await response.json();
+      resolve({ data });
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
+
 
 export function loginUser(loginInfo) {
   return new Promise(async (resolve,reject) =>{

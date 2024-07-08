@@ -4,22 +4,22 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { selectLoggedInUser } from '../auth/authSlice'
-import image from '../../images/logo.png'
+
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import { selectItems } from '../cart/cartSlice'
 import { selectUserInfo } from '../user/userSlice'
 
-const navigation = [
-  { name: 'IIT - JEE 12th', link: '/', user: true },
-  { name: 'Admin Panel', link: '/admin', admin: true},
-  { name: 'Orders', link: '/admin-orders', admin: true},
- 
 
+const image = 'https://i.pinimg.com/736x/f2/d6/7d/f2d67d8b0b75a420095546ab6036614d.jpg'
+
+const navigation = [
+  { name: 'Explore', link: '/home'},
 ]
 const userNavigation = [
-  { name: 'My Profile', link: '/profile' },
-  { name: 'My Orders', link: '/orders' },
-  { name: 'Sign out', link: '/logout' },
+  { name: 'My Profile', link: '/profile' ,req:false},
+  { name: 'Become Creator', link:'/creator/page',isCreator:false, req:true},
+  { name: 'Manage Creator Account', link:`/creator-account`,isCreator:true,req:true},
+  { name: 'Sign out', link: '/logout' ,req:false},
 ]
 
 function classNames(...classes) {
@@ -55,7 +55,7 @@ const savedItems = useSelector(selectItems);
                   <div className="hidden md:block">
                     <div className="ml-10 flex items-baseline space-x-">
                       {navigation.map((item) => 
-                         item[user.role]? ( <Link
+                         ( <Link
                           key={item.name}
                           to={item.link}
                           className={classNames(
@@ -67,7 +67,7 @@ const savedItems = useSelector(selectItems);
                           aria-current={item.current ? 'page' : undefined}
                         >
                           {item.name}
-                        </Link>) : null
+                        </Link>) 
                       )}
                     </div>
                   </div>
@@ -109,6 +109,7 @@ const savedItems = useSelector(selectItems);
                         <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         
                           {userNavigation.map((item) => (
+                            (item.isCreator===user.creator || !item.req)&&
                             <Menu.Item key={item.name}>
                               {({ active }) => (
                                 <Link
@@ -172,6 +173,7 @@ const savedItems = useSelector(selectItems);
                 </div>
                 <div className="mt-3 space-y-1 px-2">
                   {userNavigation.map((item) => (
+                    (item.isCreator===user.creator || !item.req)&&
                     <Link to={item.link}>
                     <Disclosure.Button
                       key={item.name}

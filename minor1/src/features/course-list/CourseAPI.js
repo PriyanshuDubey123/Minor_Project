@@ -8,9 +8,9 @@ export function fetchAllCourses() {
   );
 }
 
-export function fetchCoursesByFilters(filter,sort,pagination,admin) {
+export function fetchCoursesByFilters(filter,sort,pagination,userId) {
 
-  let queryString = '';
+  let queryString =  `userId=${userId}&`;
 
   for(let key in filter){
     const categoryValues = filter[key]
@@ -28,9 +28,7 @@ export function fetchCoursesByFilters(filter,sort,pagination,admin) {
     queryString += `${key}=${pagination[key]}&`
   }
 
-  if(admin){
-    queryString += `admin=true`
-  }
+
 
   return new Promise(async (resolve) =>{
     console.log(queryString);
