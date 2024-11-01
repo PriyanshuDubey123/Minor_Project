@@ -8,9 +8,9 @@ import Protected from './features/auth/components/Protected';
 import HomePage from './pages/HomePage';
 import Logout from './features/auth/components/Logout';
 import { PageNotFound } from './pages/404';
-import { checkAuthAsync, selectLoggedInUser } from './features/auth/authSlice';
+import { checkAuthAsync , selectLoggedInUser, setLoggedInUserToken } from './features/auth/authSlice';
 import { fetchItemsByUserIdAsync } from './features/cart/cartSlice';
-import { fetchLoggedInUserAsync } from './features/user/userSlice';
+import { fetchLoggedInUserAsync, selectLoading } from './features/user/userSlice';
 import CourseDetailPage from './pages/CourseDetailPage';
 import ProtectedAdmin from './features/auth/components/ProtectedAdmin';
 import AdminHomePage from './pages/AdminHomePage';
@@ -38,6 +38,9 @@ import Messages from './pages/Messages';
 import Progress from './pages/Progress';
 import TestSeries from './pages/TestSeries';
 import ContactUs from './pages/ContactUs';
+import axios from 'axios';
+import AdminLogin from './features/auth/components/AdminLogin';
+import { selectAdminLoginInfo, setAdminLoginInfo } from './features/admin/components/AdminAuthSlice';
 
 const router = createBrowserRouter([
   {
@@ -53,6 +56,10 @@ const router = createBrowserRouter([
     element: <SignUp />,
   },
   {
+    path: '/adminlogin',
+    element: <AdminLogin />,
+  },
+  {
     path: '/home',
     element: (
       <Protected>
@@ -60,15 +67,15 @@ const router = createBrowserRouter([
       </Protected>
     ),
     children: [
-      { index: true, element: <CourseList /> }, 
+      { index: true, element: <CourseList /> },
       { path: 'study', element: <MyCourses /> },
-      { path: 'learning-panel/:id', element: <LearningPanel/> },
-      { path: 'transactions', element: <UserTransactions/> },
-      { path: 'notifications', element: <Notifications/> },
-      { path: 'messages', element: <Messages/> },
-      { path: 'your-progress', element: <Progress/> },
-      { path: 'test-series', element: <TestSeries/> },
-      { path: 'contact-us', element: <ContactUs/> },
+      { path: 'learning-panel/:id', element: <LearningPanel /> },
+      { path: 'transactions', element: <UserTransactions /> },
+      { path: 'notifications', element: <Notifications /> },
+      { path: 'messages', element: <Messages /> },
+      { path: 'your-progress', element: <Progress /> },
+      { path: 'test-series', element: <TestSeries /> },
+      { path: 'contact-us', element: <ContactUs /> },
     ],
   },
   {
@@ -193,17 +200,54 @@ function App() {
   const dispatch = useDispatch();
   const user = useSelector(selectLoggedInUser);
 
-  useEffect(() => {
-    if (user) {
-      dispatch(fetchItemsByUserIdAsync(user?.id));
-      dispatch(fetchLoggedInUserAsync(user?.id));
-    }
-  }, [dispatch, user]);
+  const admin = useSelector(selectAdminLoginInfo);
 
+  const status = useSelector(selectLoading);
+
+  console.log(user);
+
+
+  useEffect(() => {
+        
+            const fetchProfile = async () => {
+              try {
+                const { data } = await axios.get('http://localhost:8080/auth/profile', { withCredentials: true });
+                console.log(data);
+                if (data?.userId || data?.adminId) {
+
+                  if(data.userId && data.adminId){
+                    dispatch(setAdminLoginInfo({id:data.adminId,email:data.adminEmail, name: data.adminName, role:"admin"}));
+                    dispatch(fetchItemsByUserIdAsync(data.userId));
+                    dispatch(fetchLoggedInUserAsync(data.userId));
+                    dispatch(setLoggedInUserToken({id: data.userId, email:data.userEmail, name: data.username }))
+                  }
+                  else if(data.userId){
+                    dispatch(fetchItemsByUserIdAsync(data.userId));
+                    dispatch(fetchLoggedInUserAsync(data.userId));
+                    dispatch(setLoggedInUserToken({id: data.userId, email:data.userEmail, name: data.username }))
+                  }
+                  else{
+                    dispatch(setAdminLoginInfo({id:data.adminId,email:data.adminEmail, name: data.adminName, role:"admin"}));
+                  }
+                }
+              } catch (err) {
+                console.error("Error fetching profile:", err);
+              }
+            };
+          
+            
+            fetchProfile();
+            
+           
+  }, []);
+  
+  
   return (
+    
     <div className="app">
       <RouterProvider router={router} />
     </div>
+    
   );
 }
 

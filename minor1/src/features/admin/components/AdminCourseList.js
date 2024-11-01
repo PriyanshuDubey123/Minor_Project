@@ -31,8 +31,8 @@ import { Link } from "react-router-dom";
 import { ITEMS_PER_PAGE, discountedPrice } from "../../../app/constants";
 import Pagination from "../../common/Pagination";
 import { addToCartAsync, selectItems } from "../../cart/cartSlice";
-import { selectLoggedInUser } from "../../auth/authSlice";
 import AdminCourseGrid from "./AdminCourseGrid";
+import { selectAdminLoginInfo } from "./AdminAuthSlice";
 
 const sortOptions = [
   { name: "Best Rating", sort: "rating", current: false },
@@ -105,10 +105,12 @@ export default function AdminCourseList() {
     setPage(page);
   };
 
+  const user = useSelector(selectAdminLoginInfo);
+
 
   useEffect(() => {
     const pagination = { _page: page, _limit: ITEMS_PER_PAGE };
-    dispatch(fetchCoursesByFiltersAsync({ filter, sort, pagination,admin:true}));
+    dispatch(fetchCoursesByFiltersAsync({ filter, sort, pagination,userId:user?.id,admin:true}));
   }, [dispatch, filter, sort, page]);
 
   useEffect(() => {

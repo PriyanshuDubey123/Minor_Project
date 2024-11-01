@@ -1,7 +1,9 @@
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { selectLoggedInUser, createUserAsync } from "../authSlice";
+import { selectLoggedInUser, createUserAsync, selectError } from "../authSlice";
 import { Link, Navigate } from "react-router-dom";
+import { fetchItemsByUserIdAsync } from "../../cart/cartSlice";
+import { fetchLoggedInUserAsync } from "../../user/userSlice";
 
 export default function SignUp() {
   const dispatch = useDispatch();
@@ -12,6 +14,16 @@ export default function SignUp() {
   } = useForm();
 
   const user = useSelector(selectLoggedInUser);
+
+
+  
+  if(user){
+    
+    dispatch(fetchItemsByUserIdAsync(user.id));
+    dispatch(fetchLoggedInUserAsync(user.id));
+  
+}
+
 
   const onSubmit = async (data) => {
     console.log(data);
@@ -28,6 +40,10 @@ console.log(formData)
     // dispatch the action
     dispatch(createUserAsync(formData));
   };
+
+
+  const error = useSelector(selectError);
+
 
   return (
     <>
@@ -169,7 +185,16 @@ console.log(formData)
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
+
+              <div>
+              {error && (
+                  <p className=" text-red-500 ">{error}</p>
+                )}
             </div>
+              
+            </div>
+
+           
 
             <div>
               <button

@@ -6,6 +6,7 @@ import ReactPlayer from 'react-player';
 import 'tailwindcss/tailwind.css';
 import { selectToggle } from '../../features/ToggleSlice';
 import { useSelector } from 'react-redux';
+import VideoModal from '../../utils/VideoModal';
 
 const LearningPanel = () => {
   const location = useLocation();
@@ -68,8 +69,8 @@ const LearningPanel = () => {
       <div className="bg-white shadow-lg rounded-lg p-6">
         <div className="mb-4">
           <h2 className="text-2xl font-semibold text-gray-900">Course Contents</h2>
-          <div className="h-2 bg-gray-200 rounded-full mt-2">
-            <div className="h-2 bg-blue-600 rounded-full" style={{ width: '50%' }}></div>
+          <div className="h-1 bg-blue-600 rounded-full mt-2">
+            {/* <div className="h-2 bg-red-600 rounded-full" style={{ width: '50%' }}></div> */}
           </div>
         </div>
         <ul className="space-y-4">
@@ -83,7 +84,7 @@ const LearningPanel = () => {
                   <h3 className="text-lg font-semibold text-gray-900">{video.title}</h3>
                 </div>
               </div>
-              <button onClick={() => openModal(video.videoUrl)} className="text-blue-600 hover:text-blue-800">
+              <button onClick={() => openModal(video.videoUrls)} className="text-blue-600 hover:text-blue-800">
                 Play
               </button>
             </li>
@@ -92,31 +93,9 @@ const LearningPanel = () => {
       </div>
 
       {/* Video Modal */}
-      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className="flex items-center justify-center mt-10">
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-[999]">
-          <div className="bg-white rounded-lg p-6 max-w-full w-full md:max-w-3xl relative left-16 top-5">
-            <button onClick={closeModal} className="absolute top-2 right-2 text-gray-700 hover:text-gray-900 z-50">
-              <FaTimes size={20} />
-            </button>
-            <div className="flex justify-center">
-              <ReactPlayer
-                url={`https://minor-backend-50m4.onrender.com/video?videoUrl=${encodeURIComponent(selectedVideo)}`}
-                controls
-                width="100%"
-                height="60vh"
-                style={{ maxHeight: '60vh' }}
-                config={{
-                  file: {
-                    attributes: {
-                      controlsList: 'nodownload',
-                    },
-                  },
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </Modal>
+   
+      <VideoModal isOpen={modalIsOpen} onClose={closeModal} videoUrls={selectedVideo} />
+
     </div>
   );
 };

@@ -1,15 +1,16 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaPlay, FaTrash } from 'react-icons/fa';
+import { FaPlay, FaTrash, FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 import VideoModal from '../utils/VideoModal';
+
 
 function ShowCourse() {
   const params = useParams();
   const [courseData, setCourseData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedVideoUrl, setSelectedVideoUrl] = useState('');
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState([]);
   const id = params.id;
 
   const [edit, setEdit] = useState(false);
@@ -18,9 +19,10 @@ function ShowCourse() {
   useEffect(() => {
     const fetchCourseData = async () => {
       try {
-        const response = await axios.get(`https://minor-backend-50m4.onrender.com/api/courses/getcourse/${id}`);
+        const response = await axios.get(`http://localhost:8080/api/courses/getcourse/${id}`);
         console.log(response.data.course);
         setCourseData(response.data.course);
+        console.log(response.data.course);
         setEdit(response.data.course.underReview || response.data.course.isPublished);
         setShowDelete(!response.data.course.underReview && !response.data.course.isPublished);
       } catch (error) {
@@ -38,7 +40,7 @@ function ShowCourse() {
     }
 
     try {
-      const response = await axios.delete(`https://minor-backend-50m4.onrender.com/api/courses/deletevideo/${id}/${videoId}`);
+      const response = await axios.delete(`http://localhost:8080/api/courses/deletevideo/${id}/${videoId}`);
       console.log('Delete Response:', response.data);
       setCourseData((prevData) => ({
         ...prevData,
@@ -52,6 +54,7 @@ function ShowCourse() {
   };
 
   const handlePlayVideo = (videoUrl) => {
+    console.log('Playing video:', videoUrl);  
     setSelectedVideoUrl(videoUrl);
     setIsModalOpen(true);
   };
@@ -99,12 +102,12 @@ function ShowCourse() {
                     {courseData.videos.map((video) => (
                       <li key={video._id} className="flex items-center justify-between mb-2 bg-gray-100 p-2 rounded-md">
                         <div className="flex items-center">
-                          <FaPlay className="text-blue-700 mr-2 cursor-pointer" onClick={() => handlePlayVideo(video.videoUrl)} />
+                          <FaPlay className="text-blue-700 mr-2 cursor-pointer" onClick={() => handlePlayVideo(video.videoUrls)} />
                           <span className="text-gray-800">{video.title}</span>
                         </div>
                         <div>
                           <button
-                            onClick={() => handlePlayVideo(video.videoUrl)}
+                            onClick={() => handlePlayVideo(video.videoUrls)}
                             className="text-blue-500 hover:text-blue-700 mr-4"
                           >
                             Play
@@ -127,15 +130,15 @@ function ShowCourse() {
       </div>
       {courseData?.underReview ? <UnderReview /> : courseData?.isPublished ? <Published /> :
         <div className="lg:w-1/3 w-full pl-0 lg:pl-4 mt-6 lg:mt-0">
-          <UploadCourseForm courseId={id} setCourseData={setCourseData} courseData={courseData} />
+          <UploadCourseForm courseData={courseData} courseId={id} setCourseData={setCourseData} />
         </div>}
       <Toaster position="top-right" />
-      <VideoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} videoUrl={selectedVideoUrl} />
+      <VideoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} videoUrls={selectedVideoUrl} />
     </div>
   );
 }
 
-function UploadCourseForm({ courseId, setCourseData,courseData }) {
+function UploadCourseForm({courseData, courseId, setCourseData }) {
   const [videoTitle, setVideoTitle] = useState('');
   const [videoFile, setVideoFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -163,7 +166,7 @@ function UploadCourseForm({ courseId, setCourseData,courseData }) {
 
     try {
       const response = await axios.post(
-        `https://minor-backend-50m4.onrender.com/api/courses/upload/videos/${courseId}`,
+        `http://localhost:8080/api/courses/upload/videos/${courseId}`,
         formData,
         {
           onUploadProgress: (progressEvent) => {
@@ -176,10 +179,10 @@ function UploadCourseForm({ courseId, setCourseData,courseData }) {
       console.log('Upload Response:', response.data);
 
       // Fetch the updated course data to ensure the video ID is available
-      const updatedCourseResponse = await axios.get(`https://minor-backend-50m4.onrender.com/api/courses/getcourse/${courseId}`);
+      const updatedCourseResponse = await axios.get(`http://localhost:8080/api/courses/getcourse/${courseId}`);
       setCourseData(updatedCourseResponse.data.course);
 
-      toast.success('Video uploaded successfully');
+      toast.success('Video uploaded and it is under processing');
       setIsUploading(false);
       setUploadProgress(0);
       setVideoTitle(''); // Clear the title input
@@ -200,8 +203,8 @@ function UploadCourseForm({ courseId, setCourseData,courseData }) {
       toast.error('Please upload the course content');
       return;}
 
-      await axios.put(`https://minor-backend-50m4.onrender.com/api/courses/review/${courseId}`);
-      const updatedCourseResponse = await axios.get(`https://minor-backend-50m4.onrender.com/api/courses/getcourse/${courseId}`);
+      await axios.put(`http://localhost:8080/api/courses/review/${courseId}`);
+      const updatedCourseResponse = await axios.get(`http://localhost:8080/api/courses/getcourse/${courseId}`);
       setCourseData(updatedCourseResponse.data.course);
       toast.success('Course is under Review!');
     } catch (err) {
@@ -264,6 +267,31 @@ function UploadCourseForm({ courseId, setCourseData,courseData }) {
       >
         Publish Course
       </button>
+
+
+      {courseData?.modification && (
+  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg shadow-md mt-4 flex items-start space-x-4">
+    <FaExclamationTriangle className="text-yellow-500 text-3xl" />
+
+    <div className="flex-1">
+      <p className="text-yellow-800 font-bold">
+        Warning: Course Needs Modification
+      </p>
+      <p className="text-yellow-700 mt-2">
+        Your course has been flagged for modifications. Please ensure that it meets the required course policies. If your modification count reaches <span className="font-bold">3</span> and the course still does not comply, it will be permanently deleted.
+      </p>
+      <div className="flex items-center mt-3">
+        <FaInfoCircle className="text-blue-500 mr-2" />
+        <p className="text-blue-600 font-semibold">
+          Current Modification Count: 
+          <span className="text-blue-700 font-bold ml-1">
+            {courseData.modificationCount}
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

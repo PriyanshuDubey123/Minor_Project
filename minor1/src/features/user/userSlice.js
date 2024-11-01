@@ -3,7 +3,7 @@ import { fetchLoggedInUserOrders,updateUser,fetchLoggedInUser} from './userAPI';
 
 const initialState = {
   userOrders:[],
-  status: 'idle',
+  status: 'initial',
   userInfo: null,
 };
 
@@ -36,9 +36,9 @@ export const userSlice = createSlice({
   initialState,
 
   reducers: {
-    increment: (state) => {
-      state.value += 1;
-    },
+    logout:(state)=>{
+      state.userInfo = null;
+    }
   },
 
   extraReducers: (builder) => {
@@ -67,9 +67,12 @@ export const userSlice = createSlice({
   },
 });
 
-export const { increment } = userSlice.actions;
+export const { logout } = userSlice.actions;
 
 export const selectUserOrders = (state)=>state.user.userOrders;
+
+
+export const selectLoading = (state)=>state.user.status;
 
 export const selectUserInfo = (state)=>state.user.userInfo;
 

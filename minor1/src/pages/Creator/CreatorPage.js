@@ -45,7 +45,7 @@ const CreatorPage = () => {
 
   const onSubmit = async (values) => {
     try {
-      await axios.post(`https://minor-backend-50m4.onrender.com/api/creator/become-creator/${user?.id}`, values);
+      await axios.post(`http://localhost:8080/api/creator/become-creator/${user?.id}`, values);
       toast.success('You are now a creator!');
      dispatch(fetchLoggedInUserAsync(user?.id))
      setShowModal(true);

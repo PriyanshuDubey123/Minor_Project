@@ -46,7 +46,7 @@ const products = [
 const features = [
   {
     name: "Course Duration",
-    description: "22 Nov 2023 - 15 Jan 2024",
+    description: null,
     icon: CloudArrowUpIcon,
   },
   {
@@ -91,7 +91,7 @@ export default function CourseDetail() {
    if(course?.enrolledStudents.includes(user?.id)){
     setEnrolled(true);
    }
-  },[]);
+  },[course,user]);
 
 
   const handleSave = (e) => {
@@ -104,7 +104,7 @@ export default function CourseDetail() {
   const handleEnroll = async () => {
 
    if(enrolled){
-    navigate(`/study/course/${course._id}`);
+    navigate(`/home/learning-panel/${course._id}`,{ state: { course }});
     return;
    }
 
@@ -115,7 +115,7 @@ export default function CourseDetail() {
 
       setTimeout(async () => { // Delay the API call by 3 seconds
         try {
-          const response = await fetch(`https://minor-backend-50m4.onrender.com/api/courses/enroll/${course._id}/${user?.id}`, {
+          const response = await fetch(`http://localhost:8080/api/courses/enroll/${course._id}/${user?.id}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -162,7 +162,7 @@ export default function CourseDetail() {
                       Course Details
                     </h2>
                     <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                      {course.title}
+                      {course.name}
                     </p>
                     <p className="mt-6 text-lg leading-8 text-gray-600">
                       {course.description}
@@ -180,7 +180,7 @@ export default function CourseDetail() {
                             />
                             {feature.name}
                           </dt>{" "}
-                          <dd className="inline">{feature.description}</dd>
+                          <dd className="inline">{feature.description ? feature.description : `${course.duration} hours` }</dd>
                         </div>
                       ))}
                     </dl>
@@ -236,7 +236,7 @@ export default function CourseDetail() {
           <div className="bg-white">
             <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10 lg:max-w-7xl lg:px-8">
               <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-                Teachers
+                Teachers for Doubt Support from StudyMate
               </h2>
 
               <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
@@ -267,9 +267,7 @@ export default function CourseDetail() {
                     <p className="text-base font-bold tracking-tight text-white">
                       {product.name}
                     </p>
-                    <p className="mt-2 text-sm font-medium text-white">
-                      More Info <span aria-hidden="true">&rarr;</span>
-                    </p>
+                   
                   </div>
                 </div>
               ))}

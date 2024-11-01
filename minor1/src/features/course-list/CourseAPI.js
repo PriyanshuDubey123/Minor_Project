@@ -1,7 +1,7 @@
 
 export function fetchAllCourses() {
   return new Promise(async (resolve) =>{
-    const response  = await fetch('https://minor-backend-50m4.onrender.com/courses')
+    const response  = await fetch('http://localhost:8080/courses')
     const data = await response.json()
     resolve({data});
   }
@@ -32,7 +32,7 @@ export function fetchCoursesByFilters(filter,sort,pagination,userId) {
 
   return new Promise(async (resolve) =>{
     console.log(queryString);
-    const response  = await fetch('https://minor-backend-50m4.onrender.com/courses?'+queryString)
+    const response  = await fetch('http://localhost:8080/courses?'+queryString)
     const data = await response.json()
     const totalItems = await response.headers.get('X-Total-Count');
     resolve({data:{courses:data,totalItems:+totalItems}});
@@ -42,14 +42,14 @@ export function fetchCoursesByFilters(filter,sort,pagination,userId) {
   
 export function fetchCategories(){
   return new Promise(async (resolve)=>{
-    const response = await fetch('https://minor-backend-50m4.onrender.com/categories');
+    const response = await fetch('http://localhost:8080/categories');
     const data = await response.json()
     resolve({data})
   })
 };
 export function fetchLanguages(){
   return new Promise(async (resolve)=>{
-    const response = await fetch('https://minor-backend-50m4.onrender.com/languages');
+    const response = await fetch('http://localhost:8080/languages');
     const data = await response.json()
     resolve({data})
   })
@@ -57,7 +57,7 @@ export function fetchLanguages(){
 
 export function fetchCourseById(id){
   return new Promise(async (resolve)=>{
-    const response = await fetch('https://minor-backend-50m4.onrender.com/courses/'+id);
+    const response = await fetch('http://localhost:8080/courses/'+id);
     const data = await response.json()
     resolve({data})
   })
@@ -65,7 +65,7 @@ export function fetchCourseById(id){
 
 export function createCourse(product){
   return new Promise(async (resolve)=>{
-    const response = await fetch('https://minor-backend-50m4.onrender.com/courses/',{
+    const response = await fetch('http://localhost:8080/courses/',{
       method:'POST',
       body:JSON.stringify(product),
       headers:{'content-type':'application/json'}
@@ -77,7 +77,7 @@ export function createCourse(product){
 
 export function updateCourse(update){
   return new Promise(async (resolve)=>{
-    const response = await fetch('https://minor-backend-50m4.onrender.com/courses/'+update.id,{
+    const response = await fetch('http://localhost:8080/courses/'+update.id,{
       method:'PATCH',
       body:JSON.stringify(update),
       headers:{'content-type':'application/json'}

@@ -33,7 +33,7 @@ const CreatorNavbar = ({ onTabSelect }) => {
         <div className="relative flex gap-10 items-center">
           <button className="relative text-gray-700 hover:text-blue-600">
             <FaBell className="text-2xl text-black" />
-            <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1">5</span>
+            <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1">0</span>
           </button>
           <FaUser
             onClick={() => setShowProfileMenu(!showProfileMenu)}
@@ -44,8 +44,8 @@ const CreatorNavbar = ({ onTabSelect }) => {
               <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
                 My Profile
               </Link>
-              <Link to="/settings" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                Settings
+              <Link to="/home" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+               Close
               </Link>
             </div>
           )}

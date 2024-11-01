@@ -32,7 +32,7 @@ const MyCourses = () => {
   useEffect(() => {
     const fetchPurchasedCourses = async () => {
       try {
-        const response = await axios.get(`https://minor-backend-50m4.onrender.com/users/purchased-courses/${user?.id}`);
+        const response = await axios.get(`http://localhost:8080/users/purchased-courses/${user?.id}`);
         console.log(response.data);
         setCourses(response.data);
       } catch (error) {
@@ -64,7 +64,7 @@ const MyCourses = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {courses.map(course => (
-              <div key={course._id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-200 flex flex-col">
+              <div key={course._id} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-200 flex flex-col mb-5">
                 <div className="min-h-72 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-72">
                   <img src={course.thumbnailUrl} alt={course?.name} className="h-full w-full" />
                 </div>
@@ -73,10 +73,10 @@ const MyCourses = () => {
                   <p className="text-gray-700 text-center">{course.description}</p>
                 </div>
                 <div className="border-t border-gray-200 pt-4 flex flex-col gap-2 text-gray-600">
-                  <div className="flex justify-between border-b pb-1"><strong>Language:</strong> {course.language}</div>
-                  <div className="flex justify-between border-b pb-1"><strong>Duration:</strong> {course.duration} hours</div>
+                  <div className="flex justify-between border-b pb-1 gap-10"><strong>Language:</strong> {course.language}</div>
+                  <div className="flex justify-between border-b pb-1 gap-10"><strong>Duration:</strong> {course.duration} hours</div>
                   {/* <div className="flex justify-between border-b pb-1"><strong>Purchased On:</strong> {new Date(course.purchaseDate).toLocaleDateString()}</div> */}
-                  <div className="flex justify-between border-b pb-1"><strong>Progress:</strong> <span className="text-blue-500">10%</span></div>
+                  <div className="flex justify-between border-b pb-1 gap-10"><strong>Videos:</strong> <span className="text-blue-500">{course?.videos.length}</span></div>
                 </div>
                 <button 
                   onClick={() => handleContinueLearning(course)}

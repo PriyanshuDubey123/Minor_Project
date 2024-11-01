@@ -5,16 +5,21 @@ import { updateUser } from '../user/userAPI';
 
 const initialState = {
   loggedInUserToken: null,
-  status: 'idle',
+  status: 'initial',
   error : null,
 
 };
 
 export const createUserAsync = createAsyncThunk(
   'user/createUser',
-  async (userData) => {
-    const response = await createUser(userData);
-    return response.data;
+  async (userData,{rejectWithValue}) => {
+    
+    try {
+      const response = await createUser(userData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error)
+    }
   }
 );
 
@@ -36,8 +41,8 @@ export const loginUserAsync = createAsyncThunk(
 
 export const signOutAsync = createAsyncThunk(
   'user/signOut',
-  async () => {
-    const response = await signOut();
+  async (role) => {
+    const response = await signOut(role);
     return response.data;
   }
 );
@@ -55,9 +60,13 @@ export const authSlice = createSlice({
   initialState,
 
   reducers: {
-    increment: (state) => {
-      state.value += 1;
+    setLoggedInUserToken: (state, action) => {
+      state.loggedInUserToken = action.payload;
+      state.status = "idle";
     },
+    setLoggedInUserStatus:(state,action)=>{
+      state.status = action;
+    }
   },
 
   extraReducers: (builder) => {
@@ -68,6 +77,10 @@ export const authSlice = createSlice({
       .addCase(createUserAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.loggedInUserToken = action.payload;
+      })
+      .addCase(createUserAsync.rejected, (state, action) => {
+        state.status = 'idle';
+        state.error = action.payload;
       })
       .addCase(loginUserAsync.pending, (state) => {
         state.status = 'loading';
@@ -103,9 +116,8 @@ export const selectLoggedInUser = (state)=>state.auth.loggedInUserToken;
 
 export const selectError = (state)=>state.auth.error;
 
+export const { setLoggedInUserToken,setLoggedInUserStatus } = authSlice.actions;
 
-
-export const { increment } = authSlice.actions;
 
 
 export default authSlice.reducer;

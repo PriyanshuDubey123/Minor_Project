@@ -1,116 +1,101 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchCourseByIdAsync, selectCourseById } from '../CourseSlice';
-import { selectLoggedInUser } from '../../auth/authSlice';
-import { addToCartAsync, selectItems } from '../../cart/cartSlice';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import {StarIcon} from "@heroicons/react/20/solid";
-import { discountedPrice } from '../../../app/constants';
-import { fetchCourseById } from '../CourseAPI';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import Tooltip from '@mui/material/Tooltip';
+import { StarIcon } from '@heroicons/react/20/solid';
+import { discountedPrice } from '../../../app/constants';
 import { selectToggle } from '../../ToggleSlice';
 
 function CourseGrid({ courses }) {
-    
-    const course = useSelector(selectCourseById);
-    const user = useSelector(selectLoggedInUser);
-    const items = useSelector(selectItems);
+  const isOpen = useSelector(selectToggle);
 
-    const isOpen = useSelector(selectToggle);
+  const shareOnWhatsApp = (courseLink) => {
+    const message = `Check out this course: ${courseLink}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
-    console.log(isOpen);
-  
-    return (
-      <>
-        <div className="lg:col-span-3 ">
-          {/* Your Code */}
-          <div>
-            <div className="bg-white">
-              <div className="mx-auto max-w-2xl px-4 py-0 sm:px-6 sm:py-0 lg:max-w-7xl lg:px-8">
-                <div className={`mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2  xl:gap-x-8  ${!isOpen ? 'lg:grid-cols-2 w-[50vw]':'lg:grid-cols-3'}`}>
-                  {courses && courses?.map((course) => (
-                      <div
-                        key={course._id}
-                        className="group relative border-solid border-2 border-gray-200 rounded-md "
-                      >
-                       
-                    <Link to={`/course-detail/${course._id}`}>
-                        <div className="mt-4 flex justify-between flex-col">
-                          <div className="flex justify-between px-2 items-center gap-2 pb-3  font-bold">
-                            <h3 className="text-sm text-black text-[1rem]">
-                              <div href={course.thumbnailUrl}>
-                                <span
-                                  aria-hidden="true"
-                                  className="absolute inset-0"
-                                />
-                                {course.name}
-                              </div>
-                            </h3>
-                            <div className=' flex gap-3 justify-center items-center'>
-                            <button className=" bg-yellow-300 font-bold rounded-md text-black p-2">New</button>
-                            <WhatsAppIcon className=" rounded-full bg-green-500 text-white"/>
-                            </div>
-                          </div>
-                          <div>
-                          
-                          <div className=" min-h-72 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-72">
-                          <img src={course.thumbnailUrl} alt={course.name} className=" h-full w-full" />
-                        </div>    
-                        <div className="flex justify-between items-center p-2 font-bold text-sm flex-col">
-                          <p className=' text-gray-700 text-center'>For {course.category} 2024 students</p>
-  
-                            <p className="mt-1 text-sm text-gray-500 text-center">
-                              <StarIcon
-                                style={{ color: "gold" }}
-                                className="w-6 h-6 inline"
-                                />
-                              <span className="align-bottom ">
-                                No rated yet
-                              </span>
-                            </p>
-                                </div>
-                          </div>
-                          <div className="flex gap-2 items-center pl-2 pb-2 justify-around">
-                            <p className=" text-blue-500 text-[1.2rem] font-bold">
-                                {course.price!==0?'₹' : null}
-                              {course.price!==0 ? discountedPrice(course):'Free'}
-                            </p>
-                            {course.price !==0 && <p className="text-sm line-through font-medium text-gray-900">
-                            ₹{course.price}
-                            </p>}
-                          </div>
-                            <p className="text-sm font-bold text-white bg-purple-500 rounded p-1 text-center">
-                              Discount of 10% Applied
-                            </p>
+  return (
+    <div className="lg:col-span-3">
+      <div className="p-6">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <div className={`grid gap-8 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-${isOpen ? 3 : 2}`}>
+            {courses &&
+              courses.map((course) => (
+                <div
+                  key={course._id}
+                  className="relative rounded-lg overflow-hidden bg-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 group"
+                >
+                  <Link to={`/course-detail/${course._id}`}>
+                    <div className="flex flex-col h-full">
+                      {/* Image Section with Overlay */}
+                      <div className="relative overflow-hidden">
+                        <div className="min-h-72 aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-72">
+                          <img src={course.thumbnailUrl} alt={course?.name} className="h-full w-full " />
                         </div>
-                           </Link>
-                        {course.deleted && (
-                          <div>
-                            
-                            <p className=" text-sm text-red-400">
-                              Course Expired
-                            </p>
-                          </div>
-                        )}
-                       
-                          <div>
-                            <hr className=" mt-2 "/>
-                            <div className="flex justify-around py-2 px-1">
-                            <button className=" bg-gray-100 text-black rounded-md p-2 w-full font-bold">See Details</button>
-                           
-                            </div>
-                          </div>
-                      
+                        <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
+                        <div className="absolute bottom-2 left-2 text-white font-semibold bg-purple-600 bg-opacity-80 rounded px-2 py-1 text-xs">
+                          10% Off
+                        </div>
                       </div>
-                    
-                  ))}
+
+                      {/* Card Content */}
+                      <div className="p-5 flex flex-col flex-grow space-y-2">
+                        <h3 className="text-lg font-semibold text-gray-800 group-hover:text-purple-600 transition-colors duration-300">
+                          {course.name}
+                        </h3>
+                        <p className="text-sm text-gray-600">For {course.category} 2024 students</p>
+
+                        {/* Rating and Price */}
+                        <div className="flex items-center justify-between mt-3">
+                          <div className="flex items-center space-x-1 text-yellow-500">
+                            <StarIcon className="w-5 h-5" />
+                            <span className="text-sm">No rating yet</span>
+                          </div>
+                          <div className="flex items-baseline space-x-2">
+                            <p className="text-lg font-bold text-blue-600">
+                              {course.price !== 0 ? '₹' : ''} {course.price !== 0 ? discountedPrice(course) : 'Free'}
+                            </p>
+                            {course.price !== 0 && (
+                              <p className="text-sm line-through text-gray-500">₹{course.price}</p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* New and WhatsApp Share */}
+                        <div className="flex items-center justify-between mt-3">
+                          <button className="bg-yellow-300 text-xs font-bold text-gray-800 px-2 py-1 rounded">
+                            New
+                          </button>
+                          <Tooltip title="Share on WhatsApp" arrow>
+                            <div onClick={() => shareOnWhatsApp(`http://localhost:3000/course-detail/${course._id}`)} className="cursor-pointer transition-transform transform hover:scale-110">
+                              <WhatsAppIcon className="text-green-500 w-6 h-6" />
+                            </div>
+                          </Tooltip>
+                        </div>
+
+                        {/* See Details Button */}
+                        <button className="mt-5 bg-purple-600 text-white w-full py-2 rounded-lg font-semibold hover:bg-purple-700 transition-all duration-300">
+                          See Details
+                        </button>
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Expiration Notice */}
+                  {course.deleted && (
+                    <div className="absolute inset-0 bg-red-700 bg-opacity-80 flex items-center justify-center">
+                      <p className="text-white font-bold">Course Expired</p>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </div>
+              ))}
           </div>
         </div>
-      </>
-    );
-  }
+      </div>
+    </div>
+  );
+}
 
-export default CourseGrid
+export default CourseGrid;

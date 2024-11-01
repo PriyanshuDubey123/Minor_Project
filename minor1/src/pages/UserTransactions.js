@@ -11,7 +11,7 @@ const UserTransactions = () => {
     useEffect(() => {
         const fetchTransactions = async () => {
             try {
-                const response = await axios.get(`https://minor-backend-50m4.onrender.com/users/transactions/${userId}`);
+                const response = await axios.get(`http://localhost:8080/users/transactions/${userId}`);
                 setTransactions(response.data);
             } catch (error) {
                 console.error('Error fetching transactions:', error);

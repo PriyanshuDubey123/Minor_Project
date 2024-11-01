@@ -8,6 +8,8 @@ import {
 
 import { Link, Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { fetchItemsByUserIdAsync } from '../../cart/cartSlice';
+import { fetchLoggedInUserAsync } from '../../user/userSlice';
 
 export default function Login() {
  
@@ -16,6 +18,14 @@ export default function Login() {
   const error = useSelector(selectError);
 
   const user = useSelector(selectLoggedInUser);
+
+
+  if(user){
+    
+      dispatch(fetchItemsByUserIdAsync(user.id));
+      dispatch(fetchLoggedInUserAsync(user.id));
+    
+  }
 
    const {
     register,
