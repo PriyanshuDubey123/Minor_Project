@@ -51,52 +51,73 @@ const VideoModal = ({ isOpen, onClose, videoUrls }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-75">
-      <div className="bg-white rounded-lg p-4 w-full max-w-4xl relative shadow-lg">
-        <button 
-          onClick={onClose} 
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-900 z-20"
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-75 mt-5">
+      {/* Main Container */}
+      <div className="bg-white rounded-lg p-6 px-8 relative shadow-lg w-full max-w-4xl flex flex-col">
+
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-0 right-0 text-gray-500 hover:text-gray-900 z-20 p-2"
         >
           <FaTimes size={24} />
         </button>
-        
-        <div className="flex justify-center mb-4">
-          <video
-            ref={videoRef}
-            className="video-js vjs-big-play-centered w-full h-72 rounded-lg"
-            controls
-            preload="auto"
-            style={{ maxWidth: '100%', height: 'auto' }} // Responsive sizing for fullscreen
-          />
-        </div>
 
-        <div className="flex justify-between items-center mt-2 px-2">
-          <div className="relative">
-            <button 
-              onClick={() => setIsSettingsOpen(!isSettingsOpen)} 
-              className="p-2 bg-blue-500 rounded-full text-white hover:bg-blue-600 transition duration-200 flex items-center z-20"
+        {/* Video Player Container */}
+        <div className="flex justify-center mb-4 w-full relative flex-grow ">
+          <div className="w-full h-auto relative" style={{ paddingBottom: '56.25%' /* 16:9 Aspect Ratio */ }}>
+            {/* Watermark */}
+            <div
+              className="absolute top-4 right-4 bg-transparent text-white text-xl italic font-semibold z-10 pointer-events-none"
+              style={{
+                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+                opacity: 0.7
+              }}
             >
-              <FaCog size={20} />
-            </button>
-            {isSettingsOpen && (
-              <div className="absolute right-0 bottom-full mb-2 w-36 bg-white shadow-lg rounded-lg z-30">
-                <label className="block text-gray-700 p-2">
-                  <span className="text-sm font-medium">Quality</span>
-                  <select 
-                    value={currentResolution} 
-                    onChange={handleResolutionChange} 
-                    className="w-full bg-gray-100 border rounded-lg p-1 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  >
-                    <option value="auto">Auto (Best Quality)</option>
-                    <option value="360p">360p</option>
-                    <option value="480p">480p</option>
-                    <option value="720p">720p</option>
-                  </select>
-                </label>
-              </div>
-            )}
+              StudyMate
+            </div>
+
+            <video
+              ref={videoRef}
+              className="video-js vjs-big-play-centered absolute top-0 left-0 w-full h-full object-contain"
+              controls
+              preload="auto"
+              style={{ objectFit: 'contain' }}
+            />
           </div>
         </div>
+
+        {/* Settings Icon and Dropdown */}
+        <div className="absolute bottom-1 left-4 flex items-center space-x-4 z-20">
+          {/* Settings Button */}
+          <button
+            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+            className="p-1 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none"
+          >
+            <FaCog size={22} />
+          </button>
+
+          {/* Settings Dropdown */}
+          {isSettingsOpen && (
+            <div className="absolute bottom-full left-0 mb-2 w-48 bg-white shadow-2xl rounded-lg z-30 transform scale-100 transition-all duration-300 ease-in-out opacity-90">
+              <div className="p-3">
+                <label className="block text-gray-800 text-sm font-medium mb-2">Quality</label>
+                <select
+                  value={currentResolution}
+                  onChange={handleResolutionChange}
+                  className="w-full bg-gray-100 border-2 border-gray-300 rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition duration-300 ease-in-out"
+                >
+                  <option value="auto">Auto</option>
+                  <option value="360p">360p</option>
+                  <option value="480p">480p</option>
+                  <option value="720p">720p</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+        </div>
+
       </div>
     </div>
   );

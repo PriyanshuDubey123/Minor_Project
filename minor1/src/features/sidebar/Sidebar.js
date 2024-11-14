@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BiChevronLeft } from 'react-icons/bi';
-import { BellIcon } from '@heroicons/react/24/outline';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import MessageIcon from '@mui/icons-material/Message';
 import BookIcon from '@mui/icons-material/Book';
 import QuizIcon from '@mui/icons-material/Quiz';
@@ -36,7 +36,7 @@ function Sidebar({ children }) {
 
   const sideBarOptions = [
     { name: 'Study', icon: <BookIcon />, to: '/home/study' },
-    { name: 'Notifications', icon: <BellIcon />, to: '/home/notifications' },
+    { name: 'Friends', icon: <GroupAddIcon />, to: '/home/friends' },
     { name: 'Messages', icon: <MessageIcon />, to: '/home/messages' },
     { name: 'Transactions', icon: <PaidIcon />, to: '/home/transactions' },
     { name: 'Your Progress', icon: <DonutSmallIcon />, to: '/home/your-progress' },

@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAdminLoginInfo } from '../features/admin/components/AdminAuthSlice';
 import { fetchAllCoursesAsync, selectAllCourses } from '../features/course-list/CourseSlice';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { replace } from 'formik';
-import { FaEllipsisV, FaTrash, FaCheckCircle } from 'react-icons/fa'; // Import icons
+import { FaEllipsisV, FaTrash, FaCheckCircle, FaCog } from 'react-icons/fa'; // Import icons
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
+import VideoModal from '../utils/VideoModal';
+import videojs from 'video.js';
+
 
 function AdminHomePage() {
   const dispatch = useDispatch();
@@ -48,14 +51,15 @@ function AdminHomePage() {
   const handlePlayVideo = (course, index) => {
     setCurrentCourse(course);
     setCurrentVideoIndex(index);
-    setCurrentVideo(course.videos[index]);
+    setCurrentVideo(course.videos[index].videoUrls);
   };
 
   const handleNextVideo = () => {
     if (currentCourse && currentVideoIndex < currentCourse.videos.length - 1) {
       const nextIndex = currentVideoIndex + 1;
       setCurrentVideoIndex(nextIndex);
-      setCurrentVideo(currentCourse.videos[nextIndex]);
+      setCurrentVideo(currentCourse.videos[nextIndex].videoUrls);
+
     }
   };
 
@@ -63,7 +67,8 @@ function AdminHomePage() {
     if (currentCourse && currentVideoIndex > 0) {
       const prevIndex = currentVideoIndex - 1;
       setCurrentVideoIndex(prevIndex);
-      setCurrentVideo(currentCourse.videos[prevIndex]);
+      setCurrentVideo(currentCourse.videos[prevIndex].videoUrls);
+
     }
   };
 
@@ -85,16 +90,17 @@ function AdminHomePage() {
   };
 
   // New API Call Handlers
-  const handleDeleteCourse = async(courseId) => {
+  const handleDeleteCourse = async(course) => {
     try {
       
   
-      const response = await axios.put(`http://localhost:8080/api/courses/modify/${courseId}`);
+      const response = await axios.put(`http://localhost:8080/api/courses/modify/${course._id}`);
       
       if (response.status === 200) {
         toast.success("Course deleted successfully");
         setCurrentVideo(null);
         dispatch(fetchAllCoursesAsync());
+        await axios.post("http://localhost:8080/api/notifications/post",{userID:course.userId,data:{content:`Your Course '${course?.name}' has been disapproved by admin`,type:"Real Time Notification"}})
       } else {
         toast.error('Failed to delete the course');
       }
@@ -104,15 +110,16 @@ function AdminHomePage() {
     }
   };
 
-  const handlePublishCourse = async(courseId) => {
+  const handlePublishCourse = async(course) => {
     try {
       
-      const response = await axios.put(`http://localhost:8080/api/courses/publish/${courseId}`);
+      const response = await axios.put(`http://localhost:8080/api/courses/publish/${course._id}`);
       
       if (response.status === 200) {
         toast.success("Course published successfully");
         setCurrentVideo(null);
         dispatch(fetchAllCoursesAsync());
+        await axios.post("http://localhost:8080/api/notifications/post",{userID:course.userId,data:{content:`Your Course '${course?.name}' has been published by admin`,type:"Real Time Notification"}})
       } else {
         toast.error('Failed to publish the course');
       }
@@ -125,6 +132,52 @@ function AdminHomePage() {
   // Toggle menu visibility
   const toggleMenu = (courseId) => {
     setIsMenuOpen((prev) => ({ ...prev, [courseId]: !prev[courseId] }));
+  };
+
+
+
+  const videoRef = useRef(null);
+  const playerRef = useRef(null);
+  const [currentResolution, setCurrentResolution] = useState('auto');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  useEffect(() => {
+    const videoElement = videoRef.current;
+
+    if (currentVideo && !playerRef.current) {
+      playerRef.current = videojs(videoElement, {
+        controls: true,
+        autoplay: false,
+        preload: 'auto',
+        fluid: true,
+        aspectRatio: '16:9',
+        sources: [{ src: getVideoUrl('auto'), type: 'application/x-mpegURL' }],
+      });
+    }
+
+    if (playerRef.current && currentVideo) {
+      playerRef.current.src({ src: getVideoUrl(currentResolution), type: 'application/x-mpegURL' });
+      playerRef.current.play();
+    }
+
+    return () => {
+      if (playerRef.current && !currentVideo) {
+        playerRef.current.dispose();
+        playerRef.current = null;
+      }
+    };
+  }, [currentVideo, currentResolution]);
+
+  const getVideoUrl = (resolution) => {
+    const videoUrlObj = currentVideo.find(video =>
+      resolution === 'auto' ? video.resolution === 'master' : video.resolution === resolution
+    );
+    return videoUrlObj ? videoUrlObj.url : currentVideo[0]?.url;
+  };
+
+  const handleResolutionChange = (event) => {
+    setCurrentResolution(event.target.value);
+    setIsSettingsOpen(false);
   };
 
   return (
@@ -221,14 +274,14 @@ function AdminHomePage() {
                         {isMenuOpen[course._id] && (
                          <div className="absolute right-0 bg-white shadow-xl rounded-lg mt-1 p-3 z-20 border border-gray-300">
                          <button
-                           onClick={() => handleDeleteCourse(course._id)}
+                           onClick={() => handleDeleteCourse(course)}
                            className="flex items-center text-red-600 hover:bg-red-100 p-2 rounded-lg transition-colors duration-200 ease-in-out"
                          >
                            <FaTrash className="mr-2 text-lg" />
                            <span className="font-semibold">Delete Course</span>
                          </button>
                          <button
-                           onClick={() => handlePublishCourse(course._id)}
+                           onClick={() => handlePublishCourse(course)}
                            className="flex items-center text-green-600 hover:bg-green-100 p-2 rounded-lg transition-colors duration-200 ease-in-out mt-2"
                          >
                            <FaCheckCircle className="mr-2 text-lg" />
@@ -296,12 +349,54 @@ function AdminHomePage() {
           {/* Video Player Section */}
           {currentVideo && (
             <div className="w-full lg:w-2/3 bg-gray-900 p-4 rounded-md flex flex-col items-center justify-center space-y-4 overflow-y-auto">
-              <video
-                controls
-                src={currentVideo.videoUrl}
-                autoPlay
-                className="w-full h-[50vh] lg:h-[60vh] rounded-lg"
-              />
+             
+             <div className="flex justify-center w-full relative flex-grow ">
+          <div className="w-full h-auto relative" style={{ paddingBottom: '56.25%' /* 16:9 Aspect Ratio */ }}>
+            <video
+              ref={videoRef}
+              className="video-js vjs-big-play-centered absolute top-0 left-0 w-full h-full object-contain"
+              controls
+              preload="auto"
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
+         
+
+          <div className="absolute bottom-8 left-1 flex items-center space-x-4 z-20">
+  {/* Settings Button */}
+  <button 
+    onClick={() => setIsSettingsOpen(!isSettingsOpen)} 
+    className="p-1 bg-blue-600 rounded-full text-white hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none"
+  >
+    <FaCog size={22} />
+  </button>
+
+  {/* Settings Dropdown */}
+  {isSettingsOpen && (
+  <div className="absolute bottom-full left-0 mb-2 w-48 bg-white shadow-2xl rounded-lg z-30 transform scale-100 transition-all duration-300 ease-in-out opacity-90">
+    <div className="p-3">
+      <label className="block text-gray-800 text-sm font-medium mb-2">Quality</label>
+      <select 
+        value={currentResolution} 
+        onChange={handleResolutionChange} 
+        className="w-full bg-gray-100 border-2 border-gray-300 rounded-lg p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-500 transition duration-300 ease-in-out"
+      >
+        <option value="auto">Auto</option>
+        <option value="360p">360p</option>
+        <option value="480p">480p</option>
+        <option value="720p">720p</option>
+      </select>
+    </div>
+  </div>
+)}
+
+</div>
+
+        </div>
+
+        
+
+
               <div className="flex justify-between w-full px-4">
                 <button
                   onClick={handlePreviousVideo}

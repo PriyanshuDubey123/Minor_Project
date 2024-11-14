@@ -33,7 +33,6 @@ import LearningPanel from './pages/MyLearnings/LearningPanel';
 import PaymentPage from './pages/MyLearnings/PaymentPage';
 import PaymentReceipt from './pages/MyLearnings/PaymentReciept';
 import UserTransactions from './pages/UserTransactions';
-import Notifications from './pages/Notifications';
 import Messages from './pages/Messages';
 import Progress from './pages/Progress';
 import TestSeries from './pages/TestSeries';
@@ -41,6 +40,7 @@ import ContactUs from './pages/ContactUs';
 import axios from 'axios';
 import AdminLogin from './features/auth/components/AdminLogin';
 import { selectAdminLoginInfo, setAdminLoginInfo } from './features/admin/components/AdminAuthSlice';
+import Friends from './pages/Friends';
 
 const router = createBrowserRouter([
   {
@@ -71,7 +71,7 @@ const router = createBrowserRouter([
       { path: 'study', element: <MyCourses /> },
       { path: 'learning-panel/:id', element: <LearningPanel /> },
       { path: 'transactions', element: <UserTransactions /> },
-      { path: 'notifications', element: <Notifications /> },
+      { path: 'friends', element: <Friends /> },
       { path: 'messages', element: <Messages /> },
       { path: 'your-progress', element: <Progress /> },
       { path: 'test-series', element: <TestSeries /> },

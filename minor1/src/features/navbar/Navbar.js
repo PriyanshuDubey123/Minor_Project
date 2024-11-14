@@ -1,13 +1,17 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { selectLoggedInUser } from '../auth/authSlice'
-
+import moment from 'moment';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import { selectItems } from '../cart/cartSlice'
 import { selectUserInfo } from '../user/userSlice'
+import { initializeSocket, registerUser, subscribeToNotifications } from '../../utils/SocketManager'
+import axios from 'axios'
+import { Badge } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 
 
 const image = 'https://i.pinimg.com/736x/f2/d6/7d/f2d67d8b0b75a420095546ab6036614d.jpg'
@@ -32,6 +36,101 @@ function Navbar({children}) {
 const user = useSelector(selectUserInfo);
 const savedItems = useSelector(selectItems);
 
+const [notifications,setNotifications] = useState([]);
+const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+const location = useLocation();
+
+const fetchNotifications = async () => {
+  try {
+    const response = await axios.get(`http://localhost:8080/api/notifications/${user?.id}`);
+    setNotifications(response.data.reverse());
+    setUnreadNotifications(response.data.filter((notification) => notification.status === "unread").length);
+    console.log(unreadNotifications)
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+  }
+};
+
+
+
+const addNotification = (newNotification) => {
+  setNotifications((prev) => [newNotification, ...prev]);
+  setUnreadNotifications((prev) => prev + 1);
+};
+
+useEffect(()=>{
+initializeSocket();
+registerUser(user?.id)
+
+fetchNotifications();
+
+subscribeToNotifications(user?.id, (notification) => {
+  console.log("Received notification:", notification);
+  addNotification(notification);
+  playNotificationSound();
+});
+
+},[user, user?.id,location.pathname])
+
+const playNotificationSound = () => {
+  const audio = new Audio("/assets/sound.wav");
+  audio.play().catch((error) => console.log("Play sound error:", error));
+};
+
+const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+const markNotificationsAsRead = async()=>{
+  try{
+      await axios.put(`http://localhost:8080/api/notifications/markAllAsSeen/${user.id}`);
+
+  }catch(error){
+    console.error("Error marking notifications as read:", error);
+  } 
+}
+
+const toggleDropdown = () => {
+
+   if(unreadNotifications && !isDropdownOpen){
+    markNotificationsAsRead();
+   }
+
+  setIsDropdownOpen(!isDropdownOpen);
+};
+
+
+const handleDeleteNotification = async (id) => {
+  try {
+    await axios.delete(`http://localhost:8080/api/notifications/${id}`);
+    setNotifications((prev) => prev.filter((notif) => notif._id !== id));
+    setUnreadNotifications(notifications.filter((notif)=>notif.status === "unread" && notif._id !== id).length);
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+  }
+};
+
+const handleClearAllNotifications = async () => {
+  try {
+    await axios.delete(`http://localhost:8080/api/notifications/deleteAll/${user.id}`);
+    setNotifications([]);
+    setUnreadNotifications(0);
+  } catch (error) {
+    console.error('Error clearing notifications:', error);
+  }
+};
+
+const [shouldAnimate, setShouldAnimate] = useState(unreadNotifications > 0);
+
+useEffect(() => {
+  if (unreadNotifications > 0) {
+    setShouldAnimate(true);
+    const timer = setTimeout(() => {
+      setShouldAnimate(false);
+    }, 3000); // Stop animation after 3 seconds
+
+    return () => clearTimeout(timer); // Clean up timer on unmount
+  }
+}, [unreadNotifications]);
 
   return (
     <>
@@ -84,17 +183,97 @@ const savedItems = useSelector(selectItems);
                       <BookmarksIcon className=" h-10 w-10 mr-3" aria-hidden="true" />
                     </button>
                     </Link>
-                    {savedItems && savedItems.length>0 && <span className="inline-flex items-center rounded-md mb-5 z-10 -ml-7 mr-2 bg-red-400 px-2 py-[0.2rem] text-xs font-bold text-white ring-1 ring-inset ring-red-600/10">{savedItems.length}</span>}
+                    {savedItems && savedItems.length>0 && <span className="inline-flex items-center rounded-md mb-5 z-10 -ml-7 mr-2 bg-red-500 px-2 py-[0.2rem] text-xs font-bold text-white ring-1 ring-inset ring-red-600/10">{savedItems.length}</span>}
+
+                     {/* notification */}
+
+                     <div className="relative px-5">
+  <Badge
+    badgeContent={unreadNotifications > 0 ? unreadNotifications : null}
+    color="error"
+    classes={{
+      badge: shouldAnimate
+        ? 'bg-red-400 text-white shadow-md rounded-full animate-bounce'
+        : 'bg-red-400 text-white shadow-md rounded-full',
+    }}
+  >
+    {/* Increased Bell Icon Size and Ensured Click Event for Toggling Dropdown */}
+    <div 
+      onClick={toggleDropdown} 
+      className="cursor-pointer flex items-center justify-center"
+    >
+      <NotificationsActiveIcon
+        className="h-16 w-16 text-black hover:text-indigo-700 transition-transform transform hover:scale-110"
+      />
+    </div>
+  </Badge>
+
+  {/* Dropdown with transition logic */}
+  {isDropdownOpen && (
+    <div className="absolute right-0 mt-2 w-96 max-h-[calc(100vh-80px)] bg-gray-100 shadow-2xl rounded-xl border border-gray-300 overflow-y-auto transition-all duration-300 ease-in-out">
+      <div className="sticky top-0 p-4 flex justify-between items-center border-b bg-purple-700  shadow-md">
+        <span className="font-semibold text-white">Notifications</span>
+        <button
+          onClick={handleClearAllNotifications}
+          className="text-sm text-white hover:underline"
+        >
+          Clear All
+        </button>
+      </div>
+      {notifications.length > 0 ? (
+        notifications.map((notif, index) => (
+          <div
+            key={index}
+            className={`flex justify-between items-start p-4 border-b ${
+              notif.status === 'unread' ? 'bg-indigo-50 shadow-sm' : 'bg-white'
+            } hover:bg-indigo-100 transition-colors duration-150`}
+          >
+            <div className="flex-grow">
+              <p className="text-sm font-medium text-gray-900">
+                {notif.content}
+                {moment().diff(moment(notif.timestamp), 'minutes') <= 5 &&
+                  notif.status === 'unread' && (
+                    <span className="ml-2 px-2 py-1 text-xs font-bold text-white bg-blue-500 rounded-full animate-pulse">
+                      New
+                    </span>
+                  )}
+              </p>
+              <p className="text-xs text-gray-500">
+                {moment(notif.timestamp).fromNow()}
+              </p>
+            </div>
+            <button
+              onClick={() => handleDeleteNotification(notif._id)}
+              className="ml-3 text-gray-500 hover:text-red-600 transition-colors"
+            >
+              <DeleteIcon className="h-5 w-5" />
+            </button>
+          </div>
+        ))
+      ) : (
+        <p className="p-4 text-center text-sm text-gray-500">
+          No new notifications
+        </p>
+      )}
+    </div>
+  )}
+</div>
+
+
+
+
+
+
 
 
                     {/* Profile dropdown */}
                     <Menu as="div" className="relative ml-3">
                       <div>
                         <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 text-white gap-5 pl-2">
-                          <p>{user.name}</p>
+                          <p className=' font-semibold '>{user.name}</p>
                           <span className="absolute -inset-1.5" />
                           <span className="sr-only">Open user menu</span>
-                          <img className="h-8 w-8 rounded-full" src={user.imageUrl} alt="" />
+                          <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
                         </Menu.Button>
                       </div>
                       <Transition

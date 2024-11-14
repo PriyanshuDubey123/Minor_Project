@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FaPlay, FaTrash, FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 import VideoModal from '../utils/VideoModal';
+import { useSelector } from 'react-redux';
+import { selectUserInfo } from '../features/user/userSlice';
 
 
 function ShowCourse() {
@@ -13,6 +15,9 @@ function ShowCourse() {
   const [selectedVideoUrl, setSelectedVideoUrl] = useState([]);
   const id = params.id;
 
+  const user = useSelector(selectUserInfo);
+  const navigate = useNavigate();
+
   const [edit, setEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(true);
 
@@ -20,6 +25,9 @@ function ShowCourse() {
     const fetchCourseData = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/api/courses/getcourse/${id}`);
+        if(response.data.course.userId !== user.id){
+          navigate('/home')
+        }
         console.log(response.data.course);
         setCourseData(response.data.course);
         console.log(response.data.course);
@@ -31,7 +39,7 @@ function ShowCourse() {
     };
 
     fetchCourseData();
-  }, [id]);
+  }, [id,user]);
 
   const handleDeleteVideo = async (videoId) => {
     if (!videoId) {

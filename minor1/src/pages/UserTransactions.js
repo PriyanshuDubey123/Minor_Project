@@ -52,7 +52,7 @@ const UserTransactions = () => {
                                 </td>
                                 <td className="py-3 px-4 font-semibold">{transaction?.courseId?.name || 'Course'}</td>
                                 <td className="py-3 px-4 text-gray-600">{transaction?.courseId?.description || 'Description'}</td>
-                                <td className="py-3 px-4 font-semibold">{transaction?.amount} {transaction?.currency}</td>
+                                <td className="py-3 px-4 font-semibold">{transaction?.amount>0?transaction?.amount:"FREE"} {transaction?.amount>0?transaction?.currency:null}</td>
                                 <td className="py-3 px-4 text-gray-600">{transaction?.order_id}</td>
                                 <td className="py-3 px-4 text-gray-600">{new Date(transaction?.createdAt).toLocaleString()}</td>
                             </tr>
