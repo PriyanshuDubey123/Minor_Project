@@ -4,7 +4,7 @@ let socket;
 
 export const initializeSocket = () => {
   
-  socket = io("http://localhost:8080");
+  socket = io("http://localhost:8080",);
   socket.on("connect", () => {
     console.log("Socket Connected");
   });
@@ -36,10 +36,12 @@ export const getMessages = (userId, callback) => {
   };
 
   // Add the listener
+  console.log("socket on")
   socket.on("messages", messageListener);
 
   // Return a cleanup function to remove the listener
   return () => {
+  console.log("socket off")
     socket.off("messages", messageListener);
   };
 };
@@ -69,4 +71,25 @@ export const disconnectSocket = () => {
     throw new Error("Socket not initialized");
   }
   socket.disconnect();
+};
+
+
+export const updateOnlineStatus = (userId, callback) => {
+  if (!socket) {
+    console.warn("Socket not initialized");
+    return () => {}; // Return a no-op cleanup function
+  }
+
+  // Define the event listener
+  const messageListener = (message) => {
+      callback(message);
+  };
+
+  // Add the listener
+  socket.on("receiveOnlineStatus", messageListener);
+
+  // Return a cleanup function to remove the listener
+  return () => {
+    socket.off("receiveOnlineStatus", messageListener);
+  };
 };

@@ -3,7 +3,7 @@ import { BiChevronLeft } from 'react-icons/bi';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import MessageIcon from '@mui/icons-material/Message';
 import BookIcon from '@mui/icons-material/Book';
-import QuizIcon from '@mui/icons-material/Quiz';
+import LiveTvIcon from "@mui/icons-material/LiveTv";
 import PhonePausedIcon from '@mui/icons-material/PhonePaused';
 import DonutSmallIcon from '@mui/icons-material/DonutSmall';
 import PaidIcon from '@mui/icons-material/Paid';
@@ -40,7 +40,7 @@ function Sidebar({ children }) {
     { name: 'Messages', icon: <MessageIcon />, to: '/home/messages' },
     { name: 'Transactions', icon: <PaidIcon />, to: '/home/transactions' },
     { name: 'Your Progress', icon: <DonutSmallIcon />, to: '/home/your-progress' },
-    { name: 'Test Series', icon: <QuizIcon />, to: '/home/test-series' },
+    { name: 'Live Class', icon: <LiveTvIcon />, to: '/home/liveclass' },
     { name: 'Contact Us', icon: <PhonePausedIcon />, to: '/home/contact-us' },
   ];
 

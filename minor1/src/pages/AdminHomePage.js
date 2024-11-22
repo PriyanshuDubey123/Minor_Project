@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAdminLoginInfo } from '../features/admin/components/AdminAuthSlice';
 import { fetchAllCoursesAsync, selectAllCourses } from '../features/course-list/CourseSlice';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { replace } from 'formik';
 import { FaEllipsisV, FaTrash, FaCheckCircle, FaCog } from 'react-icons/fa'; // Import icons
+import SettingsInputAntennaIcon from '@mui/icons-material/SettingsInputAntenna';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import VideoModal from '../utils/VideoModal';
@@ -187,36 +188,49 @@ function AdminHomePage() {
       <div className="flex flex-col h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 backdrop-blur-sm">
         {/* Navbar */}
         <nav className="bg-black text-white p-4 flex justify-between items-center shadow-lg">
-          <div className="flex items-center space-x-4">
-            <img src="https://i.pinimg.com/736x/f2/d6/7d/f2d67d8b0b75a420095546ab6036614d.jpg" alt="Logo" className="h-10" />
-            <h1 className="text-2xl font-extrabold">Admin Panel</h1>
-          </div>
-          <div className="relative flex items-center space-x-4">
-            <img 
-              src="https://t4.ftcdn.net/jpg/03/08/33/75/360_F_308337583_CahQnaQMDdhkNnAY7Q0k7dhZZFCEmj7p.jpg" 
-              alt="Profile" 
-              className="h-10 w-10 rounded-full border-2 border-white cursor-pointer"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown
-            />
-            <span 
-              className="font-semibold cursor-pointer" 
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown
+      <div className="flex items-center space-x-4">
+        <img 
+          src="https://i.pinimg.com/736x/f2/d6/7d/f2d67d8b0b75a420095546ab6036614d.jpg" 
+          alt="Logo" 
+          className="h-10" 
+        />
+        <h1 className="text-2xl font-extrabold">Admin Panel</h1>
+      </div>
+      <div className="relative flex items-center space-x-4">
+        {/* Live Streaming Icon */}
+        <Link to="/admin/livestream">
+        <SettingsInputAntennaIcon 
+            className="text-black bg-white cursor-pointer hover:text-gray-700 rounded-full border-2 border-white p-2 transition-transform duration-200 hover:scale-110"
+            fontSize="large"
+            titleAccess="Live Streaming"
+          />
+        </Link>
+        {/* Profile Photo */}
+        <img 
+          src="https://t4.ftcdn.net/jpg/03/08/33/75/360_F_308337583_CahQnaQMDdhkNnAY7Q0k7dhZZFCEmj7p.jpg" 
+          alt="Profile" 
+          className="h-10 w-10 rounded-full border-2 border-white cursor-pointer"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown
+        />
+        <span 
+          className="font-semibold cursor-pointer" 
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown
+        >
+          {admin?.name}
+        </span>
+        {/* Sign Out Dropdown */}
+        {isDropdownOpen && (
+          <div className="absolute right-0 bg-white shadow-lg rounded-md mt-1 top-12 px-5 z-10">
+            <button 
+              onClick={handleSignOut} 
+              className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-28 text-left"
             >
-              {admin?.name}
-            </span>
-            {/* Sign Out Dropdown */}
-            {isDropdownOpen && (
-              <div className="absolute right-0 bg-white shadow-lg rounded-md mt-1 top-12 px-5 z-10">
-                <button 
-                  onClick={handleSignOut} 
-                  className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-28 text-left"
-                >
-                  Sign Out
-                </button>
-              </div>
-            )}
+              Sign Out
+            </button>
           </div>
-        </nav>
+        )}
+      </div>
+    </nav>
 
         {/* Filter Section */}
         <div className="flex justify-center mt-4 space-x-4">

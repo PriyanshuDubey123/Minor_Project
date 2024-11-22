@@ -381,7 +381,7 @@ function DeskTopFilter({ handleFilter, filters }) {
               </h3>
               <Disclosure.Panel className="pt-6">
                 <div className="space-y-4">
-                  {section?.options?.map((option, optionIdx) => (
+                  {Array.isArray(section?.options) && section?.options?.map((option, optionIdx) => (
                     <div key={option.value} className="flex items-center">
                       <input
                         id={`filter-$ {section.id}-$ {optionIdx}`}

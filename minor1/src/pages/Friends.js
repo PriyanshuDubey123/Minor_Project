@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaUserPlus, FaCheck, FaTimes, FaChevronDown, FaEye } from 'react-icons/fa';
+import { FaUserPlus, FaCheck, FaTimes, FaChevronDown, FaEye, FaEllipsisV } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 import Modal from 'react-modal';
 import axios from 'axios';
@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { selectUserInfo } from '../features/user/userSlice';
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { useNavigate } from 'react-router-dom';
 
 // Modal styles
 const customModalStyles = {
@@ -90,10 +91,10 @@ const Friends = () => {
       if (response.status === 200) {
         setFriendRequests((prev) =>
           prev.filter((ele) => ele.userId.toString() !== friend.userId.toString())
-        );   
+        );
         setMyFriends((prev) => [...prev, friend]);
         toast.success(`You have accepted ${friend.username}'s friend request.`);
-        await axios.post("http://localhost:8080/api/notifications/post",{userID:friend.userId,data:{content:`"${user?.name}" accepted your friend request`,type:"Real Time Notification"}})
+        await axios.post("http://localhost:8080/api/notifications/post", { userID: friend.userId, data: { content: `"${user?.name}" accepted your friend request`, type: "Real Time Notification" } })
       }
     } catch (error) {
       toast.error(`Error accepting friend request of ${friend.username}.`);
@@ -106,9 +107,9 @@ const Friends = () => {
       if (response.status === 200) {
         setFriendRequests((prev) =>
           prev.filter((ele) => ele.userId.toString() !== friend.userId.toString())
-        );  
+        );
         toast.error(`You have rejected ${friend.username}'s friend request.`);
-        await axios.post("http://localhost:8080/api/notifications/post",{userID:friend.userId,data:{content:`"${user?.name}" rejected your friend request`,type:"Real Time Notification"}})
+        await axios.post("http://localhost:8080/api/notifications/post", { userID: friend.userId, data: { content: `"${user?.name}" rejected your friend request`, type: "Real Time Notification" } })
       }
     } catch (error) {
       toast.error(`Error rejecting friend request of ${friend.username}.`);
@@ -130,9 +131,9 @@ const Friends = () => {
               : ele
           )
         );
-         
+
         toast.success(`Friend request sent to ${friend.username}.`);
-        await axios.post("http://localhost:8080/api/notifications/post",{userID:friend.userId,data:{content:`New Friend Request Revieved "${user?.name}"`,type:"Real Time Notification"}})
+        await axios.post("http://localhost:8080/api/notifications/post", { userID: friend.userId, data: { content: `New Friend Request Revieved "${user?.name}"`, type: "Real Time Notification" } })
       }
     } catch (error) {
       toast.error(`Error sending friend request to ${friend.username}.`);
@@ -148,6 +149,64 @@ const Friends = () => {
     setModalOpen(false);
     setSelectedCourses([]);
   };
+
+
+  // State to track which menu is open (null means no menu is open)
+  const [menuOpen, setMenuOpen] = useState(null);
+
+  // Toggles the visibility of the dropdown menu for a specific friend
+  const toggleMenu = (friendId) => {
+    setMenuOpen((prev) => (prev === friendId ? null : friendId));
+  };
+
+  // Handler for "Start Chatting" action
+
+  const navigate = useNavigate();
+
+  const handleStartChat = async (friendId) => {
+
+    try {
+
+
+      console.log(user?.id, friendId)
+
+      const response = await axios.post('http://localhost:8080/api/chats/createchat', {
+        senderId: user?.id,
+        receiverId: friendId
+      });
+      if (response.status === 201) {
+        toast.success("Chat Created Successfully");
+        navigate("/home/messages");
+      }
+      else if (response.status === 200) {
+        navigate("/home/messages");
+      }
+
+    } catch (err) {
+
+    }
+  };
+
+  // Handler for "Remove Friend" action
+  const handleRemoveFriend = async(friend) => {
+  
+   try{
+
+  const response = await axios.post('http://localhost:8080/api/friends/removefriend', { user: user, friend: friend })
+
+  if (response.status === 200) {
+    setMyFriends((prev) =>
+      prev.filter((ele) => ele.userId.toString() !== friend.userId.toString())
+    );
+  }
+
+   }catch(err){
+
+   }
+
+
+  };
+
 
   return (
     <div className="p-8 space-y-16 max-w-7xl mx-auto">
@@ -248,6 +307,7 @@ const Friends = () => {
       </section>
 
       {/* My Friends Section */}
+
       <section>
         <h2 className="text-3xl font-semibold text-gray-800 mb-8 flex items-center space-x-2">
           <FaEye className="text-green-500" />
@@ -275,12 +335,41 @@ const Friends = () => {
                 </div>
               </div>
             ))
-            : myFriends.length > 0 ?
-              myFriends?.slice(0, showMoreFriends ? myFriends.length : 3).map((friend, index) => (
+            : myFriends.length > 0
+              ? myFriends.slice(0, showMoreFriends ? myFriends.length : 3).map((friend, index) => (
                 <Card key={index}>
+                  <div className="relative">
+                    {/* Three Dots Menu */}
+                    <div
+                      className="absolute top-2 right-0 cursor-pointer text-gray-500 hover:text-gray-800"
+                      onClick={() => toggleMenu(friend.userId)}
+                    >
+                      <FaEllipsisV size={20} />
+                    </div>
+                    {menuOpen?.toString() === friend?.userId?.toString() && (
+                      <div className="absolute top-8 right-2 bg-gray-100 border rounded-lg shadow-lg w-40 z-10">
+                        <button
+                          onClick={() => handleStartChat(friend.userId)}
+                          className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-200"
+                        >
+                          Start Chatting
+                        </button>
+                        <button
+                          onClick={() => handleRemoveFriend(friend)}
+                          className="block w-full px-4 py-2 text-left text-red-500 hover:bg-gray-200"
+                        >
+                          Remove Friend
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="flex items-center space-x-4 mb-4">
                     <img
-                      src={friend.profilePicture || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTMqcCXSPd1GayrYoUaN2o4vaBaiZCOa7v7Q&s'}
+                      src={
+                        friend.profilePicture ||
+                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTMqcCXSPd1GayrYoUaN2o4vaBaiZCOa7v7Q&s'
+                      }
                       alt={friend.username}
                       className="w-16 h-16 rounded-full object-cover border-2 border-green-400"
                     />
@@ -294,7 +383,10 @@ const Friends = () => {
                     {friend.mutualCourses.slice(0, 2).map((course, courseIndex) => (
                       <div key={courseIndex} className="flex items-center mb-2">
                         <img
-                          src={course.thumbnailUrl || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTMqcCXSPd1GayrYoUaN2o4vaBaiZCOa7v7Q&s'}
+                          src={
+                            course.thumbnailUrl ||
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTMqcCXSPd1GayrYoUaN2o4vaBaiZCOa7v7Q&s'
+                          }
                           alt={course.name}
                           className="w-12 h-12 rounded mr-3 object-cover"
                         />
@@ -314,15 +406,19 @@ const Friends = () => {
                     )}
                   </div>
                 </Card>
-              )) : (<p className="text-gray-500 text-center col-span-full">
-                No friends found.
-              </p>)}
+              ))
+              : (
+                <p className="text-gray-500 text-center col-span-full">No friends found.</p>
+              )}
         </div>
         {!isLoading && myFriends.length > 3 && (
           <button onClick={handleShowMoreFriends} className="text-blue-500 flex items-center mt-4">
-            <FaChevronDown className={`transform ${showMoreFriends ? 'rotate-180' : ''} transition-transform`} />
+            <FaChevronDown
+              className={`transform ${showMoreFriends ? 'rotate-180' : ''} transition-transform`}
+            />
             <span className="ml-2">{showMoreFriends ? 'View Less' : 'View All My Friends'}</span>
-          </button>)}
+          </button>
+        )}
       </section>
 
       {/* Find Friends Section */}
