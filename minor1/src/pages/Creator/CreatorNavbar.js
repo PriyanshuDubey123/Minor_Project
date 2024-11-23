@@ -31,10 +31,7 @@ const CreatorNavbar = ({ onTabSelect }) => {
           <NavLink label="My Courses" tab="my-courses" onClick={handleTabClick} selected={selectedTab === 'my-courses'} />
         </div>
         <div className="relative flex gap-10 items-center">
-          <button className="relative text-gray-700 hover:text-blue-600">
-            <FaBell className="text-2xl text-black" />
-            <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1">0</span>
-          </button>
+         
           <FaUser
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="cursor-pointer text-2xl text-black"

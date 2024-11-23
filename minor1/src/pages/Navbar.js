@@ -19,7 +19,7 @@ const Navbar = () => {
       </ul>
       <div className='pt-2'>
       <Link to={'/login'}>
-      <button className='bg-indigo-700 text-white px-3 py-2 rounded-[10px] hover:bg-blue-600 hover:text-slate-950'>Login/SignUp</button>
+      <button className='bg-indigo-700 text-white px-3 py-2 rounded-[10px] hover:bg-blue-600 hover:text-slate-950'>Explore</button>
       </Link>
       </div>
     </nav>

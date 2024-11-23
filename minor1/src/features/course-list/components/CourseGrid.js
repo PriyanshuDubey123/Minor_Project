@@ -6,6 +6,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { discountedPrice } from '../../../app/constants';
 import { selectToggle } from '../../ToggleSlice';
+import { FaStar } from 'react-icons/fa';
 
 function CourseGrid({ courses }) {
   const isOpen = useSelector(selectToggle);
@@ -35,9 +36,9 @@ function CourseGrid({ courses }) {
                           <img src={course.thumbnailUrl} alt={course?.name} className="h-full w-full " />
                         </div>
                         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-50"></div>
-                        <div className="absolute bottom-2 left-2 text-white font-semibold bg-purple-600 bg-opacity-80 rounded px-2 py-1 text-xs">
-                          10% Off
-                        </div>
+                        {course?.discountPercentage>0 && course?.price>0 && <div className="absolute bottom-2 left-2 text-white font-semibold bg-purple-600 bg-opacity-80 rounded px-2 py-1 text-xs">
+                          {course?.discountPercentage}% Off
+                        </div>}
                       </div>
 
                       {/* Card Content */}
@@ -50,14 +51,22 @@ function CourseGrid({ courses }) {
                         {/* Rating and Price */}
                         <div className="flex items-center justify-between mt-3">
                           <div className="flex items-center space-x-1 text-yellow-500">
-                            <StarIcon className="w-5 h-5" />
-                            <span className="text-sm">No rating yet</span>
+                            {course.overAllRating > 0 ?Array(5)
+                              .fill(0)
+                              .map((_, i) => (
+                                <FaStar
+                                  key={i}
+                                  size={24}
+                                  color={i < course.overAllRating ? '#ffc107' : '#d1d5db'}
+                                />
+                              )):
+                            <span className="text-sm">No rating yet</span>}
                           </div>
                           <div className="flex items-baseline space-x-2">
                             <p className="text-lg font-bold text-blue-600">
                               {course.price !== 0 ? '₹' : ''} {course.price !== 0 ? discountedPrice(course) : 'Free'}
                             </p>
-                            {course.price !== 0 && (
+                            {course?.discountPercentage>0 && course.price !== 0 && (
                               <p className="text-sm line-through text-gray-500">₹{course.price}</p>
                             )}
                           </div>

@@ -41,6 +41,7 @@ export function loginUser(loginInfo) {
       }
       else{
         const error = await response.text()
+        console.log(error);
         reject(error);
       }
     }

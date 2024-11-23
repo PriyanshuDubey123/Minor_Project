@@ -25,7 +25,7 @@ function ShowCourse() {
     const fetchCourseData = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/api/courses/getcourse/${id}`);
-        if(response.data.course.userId !== user.id){
+        if (response.data.course.userId !== user.id) {
           navigate('/home')
         }
         console.log(response.data.course);
@@ -39,7 +39,7 @@ function ShowCourse() {
     };
 
     fetchCourseData();
-  }, [id,user]);
+  }, [id, user]);
 
   const handleDeleteVideo = async (videoId) => {
     if (!videoId) {
@@ -62,7 +62,7 @@ function ShowCourse() {
   };
 
   const handlePlayVideo = (videoUrl) => {
-    console.log('Playing video:', videoUrl);  
+    console.log('Playing video:', videoUrl);
     setSelectedVideoUrl(videoUrl);
     setIsModalOpen(true);
   };
@@ -72,15 +72,38 @@ function ShowCourse() {
     setShowDelete(!showDelete);
   };
 
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+const [discount, setDiscount] = useState("");
+
+const handleDiscountSubmit = async () => {
+  if (discount < 0 || discount > 100) {
+    toast.error("Please enter a valid discount percentage between 0 and 100.");
+    return;
+  }
+
+  try {
+    const response = await axios.post(`http://localhost:8080/api/courses/${id}/discount`, {
+      discountPercentage: discount,
+    });
+    toast.success("Discount updated successfully!");
+    setCourseData((prev) => ({ ...prev, discountPercentage: discount }));
+    setShowDiscountModal(false);
+  } catch (error) {
+    toast.error("Failed to update discount. Please try again.");
+    console.error(error);
+  }
+};
+
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50 p-6">
       <div className="lg:w-2/3 w-full">
         {courseData && (
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl w-full border border-gray-200 hover:shadow-xl transition-shadow duration-300">
             <div className="flex justify-center">
-              <img 
-                src={courseData.thumbnailUrl} 
-                alt="Course Thumbnail" 
+              <img
+                src={courseData.thumbnailUrl}
+                alt="Course Thumbnail"
                 className="rounded-lg w-full object-contain"
                 style={{ height: '200px' }}
               />
@@ -101,10 +124,52 @@ function ShowCourse() {
                 <hr />
                 <p className="text-sm text-gray-800 flex justify-between"><span className="font-semibold text-gray-900">Created At:</span> {new Date(courseData.createdAt).toLocaleDateString()}</p>
               </div>
+
+              {courseData.price > 0 && <div className="mt-4">
+                <h2 className="text-xl font-bold text-blue-700 mb-2">Manage Discount</h2>
+                <button
+                  onClick={() => setShowDiscountModal(true)}
+                  className="bg-gray-200 text-black px-4 py-2 font-semibold shadow-md hover:bg-gray-300 transition-colors border-2 border-gray-300"
+                >
+                  Add/Remove Discount
+                </button>
+              </div>}
+
+              {showDiscountModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                  <div className="bg-white shadow-lg p-6 max-w-md w-full">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Set Discount Percentage</h2>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={discount}
+                      onChange={(e) => setDiscount(e.target.value)}
+                      className="border-2 p-2 w-full"
+                      placeholder="Enter discount percentage (0-100)"
+                    />
+                    <div className="mt-4 flex justify-end">
+                      <button
+                        onClick={() => setShowDiscountModal(false)}
+                        className="bg-gray-300 text-gray-800 px-4 py-2 mr-2"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleDiscountSubmit}
+                        className="bg-blue-500 text-white px-4 py-2 hover:bg-blue-600"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {courseData.videos && courseData.videos.length > 0 && (
                 <div className="mt-4">
                   <h2 className="text-xl font-bold text-blue-700 mb-2">Course Content</h2>
-                  {edit && <button  className=" py-1 px-4 mb-4 rounded-lg shadow-md transition-colors duration-300" onClick={handleEdit}>
+                  {edit && !courseData.isPublished && <button className=" py-1 px-4 mb-4 rounded-lg shadow-md transition-colors duration-300" onClick={handleEdit}>
                     <img width={20} height={20} src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Pencil_edit_icon.jpg" alt="" /></button>}
                   <ul>
                     {courseData.videos.map((video) => (
@@ -146,7 +211,7 @@ function ShowCourse() {
   );
 }
 
-function UploadCourseForm({courseData, courseId, setCourseData }) {
+function UploadCourseForm({ courseData, courseId, setCourseData }) {
   const [videoTitle, setVideoTitle] = useState('');
   const [videoFile, setVideoFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -207,9 +272,10 @@ function UploadCourseForm({courseData, courseId, setCourseData }) {
   const handlePublish = async () => {
     try {
 
-      if(courseData.videos.length === 0){
-      toast.error('Please upload the course content');
-      return;}
+      if (courseData.videos.length === 0) {
+        toast.error('Please upload the course content');
+        return;
+      }
 
       await axios.put(`http://localhost:8080/api/courses/review/${courseId}`);
       const updatedCourseResponse = await axios.get(`http://localhost:8080/api/courses/getcourse/${courseId}`);
@@ -249,9 +315,8 @@ function UploadCourseForm({courseData, courseId, setCourseData }) {
           <>
             <button
               onClick={handleUpload}
-              className={`w-full bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 ${
-                isUploading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`w-full bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 ${isUploading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               disabled={isUploading}
             >
               {isUploading ? 'Uploading...' : 'Upload Video'}
@@ -278,28 +343,28 @@ function UploadCourseForm({courseData, courseId, setCourseData }) {
 
 
       {courseData?.modification && (
-  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg shadow-md mt-4 flex items-start space-x-4">
-    <FaExclamationTriangle className="text-yellow-500 text-3xl" />
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg shadow-md mt-4 flex items-start space-x-4">
+          <FaExclamationTriangle className="text-yellow-500 text-3xl" />
 
-    <div className="flex-1">
-      <p className="text-yellow-800 font-bold">
-        Warning: Course Needs Modification
-      </p>
-      <p className="text-yellow-700 mt-2">
-        Your course has been flagged for modifications. Please ensure that it meets the required course policies. If your modification count reaches <span className="font-bold">3</span> and the course still does not comply, it will be permanently deleted.
-      </p>
-      <div className="flex items-center mt-3">
-        <FaInfoCircle className="text-blue-500 mr-2" />
-        <p className="text-blue-600 font-semibold">
-          Current Modification Count: 
-          <span className="text-blue-700 font-bold ml-1">
-            {courseData.modificationCount}
-          </span>
-        </p>
-      </div>
-    </div>
-  </div>
-)}
+          <div className="flex-1">
+            <p className="text-yellow-800 font-bold">
+              Warning: Course Needs Modification
+            </p>
+            <p className="text-yellow-700 mt-2">
+              Your course has been flagged for modifications. Please ensure that it meets the required course policies. If your modification count reaches <span className="font-bold">3</span> and the course still does not comply, it will be permanently deleted.
+            </p>
+            <div className="flex items-center mt-3">
+              <FaInfoCircle className="text-blue-500 mr-2" />
+              <p className="text-blue-600 font-semibold">
+                Current Modification Count:
+                <span className="text-blue-700 font-bold ml-1">
+                  {courseData.modificationCount}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -308,9 +373,9 @@ function UnderReview() {
   return (
     <div className="flex flex-col items-center justify-center p-6 text-center">
       <div className="flex items-center justify-center mb-2">
-        <img 
-          src="https://cdn.iconscout.com/icon/free/png-256/free-magnifying-glass-5136281-4285441.png?f=webp&w=256" 
-          alt="Magnifying Glass" 
+        <img
+          src="https://cdn.iconscout.com/icon/free/png-256/free-magnifying-glass-5136281-4285441.png?f=webp&w=256"
+          alt="Magnifying Glass"
           className="w-10 h-10"
         />
       </div>
