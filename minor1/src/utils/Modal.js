@@ -5,6 +5,16 @@ const Modal = ({ showModal, setShowModal,campId ,url, description}) => {
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
+
+
+    const playNotificationSound = () => {
+      const audio = new Audio("/assets/sound.wav");
+      audio.play().catch((error) => console.log("Play sound error:", error));
+    };
+    playNotificationSound();
+
+
+
     let countdownInterval;
     if (showModal) {
       countdownInterval = setInterval(() => {

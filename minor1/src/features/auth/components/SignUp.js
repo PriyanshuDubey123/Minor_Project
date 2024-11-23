@@ -60,7 +60,7 @@ console.log(formData)
     <>
       {user && <Navigate to="/home" replace={true} />}
       <div className="flex min-h-screen items-center justify-center px-6 py-12 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-white p-10  shadow-md shadow-black">
+      <div className="w-full max-w-xl space-y-8 bg-white p-10 shadow-xl">
         <div className="text-center">
           <img
             className="mx-auto h-16 w-16 rounded-full border-4 border-indigo-500 p-1 shadow-lg"
@@ -78,7 +78,7 @@ console.log(formData)
 
         <form
           noValidate
-          className="mt-8 space-y-6 bg-gray-200 shadow-md shadow-black p-5"
+          className="mt-8 space-y-6 bg-white shadow-lg p-5"
           onSubmit={handleSubmit(onSubmit)}
         >
           {/* Email Address */}

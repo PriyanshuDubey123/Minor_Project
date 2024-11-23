@@ -39,7 +39,7 @@ export default function Login() {
     <>
     {user && <Navigate to="/home" replace={true}></Navigate>}
     <div className="flex min-h-screen items-center justify-center  px-6 py-12 lg:px-8">
-  <div className="w-full max-w-md space-y-8 bg-white p-10 shadow-md shadow-black">
+  <div className="w-full max-w-md space-y-8 bg-white p-10 shadow-xl">
     <div>
       <img
         className="mx-auto h-14 w-14 rounded-full"
@@ -58,7 +58,7 @@ export default function Login() {
           loginUserAsync({ email: data.email, password: data.password })
         );
       })}
-      className="mt-8 space-y-6 bg-white p-6 rounded-lg shadow-sm shadow-black"
+      className="mt-8 space-y-6 bg-white p-6 rounded-lg shadow-lg"
     >
       <div>
         <label
