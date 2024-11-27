@@ -25,32 +25,33 @@ export function createUser(userData) {
 
 
 export function loginUser(loginInfo) {
-  return new Promise(async (resolve,reject) =>{
-   
-    try{
-      const response  = await fetch('http://localhost:8080/auth/login',{
-        method:'POST',
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch('http://localhost:8080/auth/login', {
+        method: 'POST',
         body: JSON.stringify(loginInfo),
-        headers:{'content-type':'application/json'},
-        credentials: 'include', 
-      })
-      if(response.ok){
-        const data = await response.json()
-        console.log(data);
-        resolve({data});
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+
+      // Check if the response is ok (status 2xx)
+      if (response.ok) {
+        const data = await response.json(); // Parse the response data
+        resolve({ data });
+      } else {
+        // If the response is not ok, parse the error response and reject
+        const error = await response.json(); // Parse the error message as JSON
+        console.log('Login failed:', error);
+        reject(error.message || 'An unknown error occurred'); // Reject with the error message or a fallback
       }
-      else{
-        const error = await response.text()
-        console.log(error);
-        reject(error);
-      }
+    } catch (err) {
+      // Catch any network or unexpected errors and reject
+      console.error('Request error:', err);
+      reject('Network error or server not reachable');
     }
-    catch(err){
-      reject(err);
-    }
-  }
-  );
+  });
 }
+
 
 
 export async function signOut(role = "user") {

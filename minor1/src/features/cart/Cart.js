@@ -12,8 +12,8 @@ export default function Cart() {
   const items = useSelector(selectItems);
   console.log("items " + items);
 
-  const totalAmount = items?.reduce((amount, item) => discountedPrice(item.course) * item.quantity + amount, 0);
-  const totalItems = items?.reduce((quantity, item) => item.quantity + quantity, 0);
+  const totalAmount = Array.isArray(items) ? items?.reduce((amount, item) => discountedPrice(item.course) * item.quantity + amount, 0) :0;
+  const totalItems = Array.isArray(items) ? items?.reduce((quantity, item) => item.quantity + quantity, 0):0;
 
 
   const handleRemove = (itemId) => {

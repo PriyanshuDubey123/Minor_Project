@@ -26,7 +26,7 @@ export const loginAdminAsync = createAsyncThunk(
 
 
 
-export const signOutAsync = createAsyncThunk(
+export const signOutAdminAsync = createAsyncThunk(
   'admin/signOut',
   async () => {
     const response = await signOut("admin");
@@ -63,10 +63,10 @@ export const adminAuthSlice = createSlice({
         state.status = 'idle';
         state.error = action.payload;
       })
-      .addCase(signOutAsync.pending, (state) => {
+      .addCase(signOutAdminAsync.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(signOutAsync.fulfilled, (state, action) => {
+      .addCase(signOutAdminAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.adminLoginInfo = null;
       })

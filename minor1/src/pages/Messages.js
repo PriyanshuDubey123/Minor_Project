@@ -12,7 +12,7 @@ import { getMessages, updateMessages, updateOnlineStatus } from "../utils/Socket
 import { useLocation } from "react-router-dom";
 
 const Messages = () => {
-  const [chats, setChats] = useState([]);
+  const [chats, setChats] = useState(null);
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [filterText, setFilterText] = useState("");
@@ -90,11 +90,11 @@ const Messages = () => {
     }
   };
 
-  const filteredChats = chats.filter(chat =>
+  const filteredChats = Array.isArray(chats) ? chats?.filter(chat =>
     chat.participants.some(participant =>
       participant.username.toLowerCase().startsWith(filterText.toLowerCase())
     )
-  );
+  ):[];
 
   const location = useLocation();
 
@@ -296,27 +296,32 @@ const Messages = () => {
 
   {/* Chat List */}
   <div className="flex-grow overflow-y-auto bg-gray-50 divide-y divide-gray-200">
+  {/* Check if filteredChats is loading or empty */}
+  {chats === null ? (
+    // Skeleton loading state
+    Array.from({ length: 5 }).map((_, index) => (
+      <div key={index} className="flex items-center p-4 space-x-3 animate-pulse">
+        {/* Profile Picture Skeleton */}
+        <div className="w-14 h-14 bg-gray-200 rounded-full"></div>
 
-   {!chats  ? (Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={index}
-              className="flex items-center p-4 space-x-3 animate-pulse"
-            >
-              {/* Profile Picture Skeleton */}
-              <div className="w-14 h-14 bg-gray-200 rounded-full"></div>
+        {/* Chat Details Skeleton */}
+        <div className="flex flex-col flex-grow space-y-2">
+          <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+          <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+        </div>
 
-              {/* Chat Details Skeleton */}
-              <div className="flex flex-col flex-grow space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                <div className="h-3 bg-gray-200 rounded w-5/6"></div>
-              </div>
-
-              {/* Time Skeleton */}
-              <div className="w-10 h-3 bg-gray-200 rounded"></div>
-            </div>
-          ))):
-
-          filteredChats.length!==0 ? (filteredChats.map((chat) => (
+        {/* Time Skeleton */}
+        <div className="w-10 h-3 bg-gray-200 rounded"></div>
+      </div>
+    ))
+  ) : chats.length === 0 ? (
+    // No chats found message
+    <p className="flex items-center justify-center w-full h-full text-center text-gray-500">
+      No chats found
+    </p>
+  ) : (
+    // Chat list
+    filteredChats.map((chat) => (
       <div
         key={chat._id}
         className={`flex items-center p-4 space-x-3 cursor-pointer transition-all duration-200 rounded-lg ${
@@ -326,93 +331,98 @@ const Messages = () => {
         }`}
         onClick={() => handleSelectedChat(chat)}
       >
-        {chat.participants.map((participant) =>
-          participant._id !== user.id ? (
-            <React.Fragment key={participant._id}>
-              {/* Profile Picture */}
-              <div className="relative w-14 h-14 flex-shrink-0">
-                <img
-                  src={
-                    participant.profilePicture ||
-                    "https://i.pinimg.com/236x/00/80/ee/0080eeaeaa2f2fba77af3e1efeade565.jpg"
-                  }
-                  alt={`${participant.username}'s avatar`}
-                  className="w-full h-full rounded-full shadow-lg object-cover"
-                />
-                {participant.onlineStatus && (
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
-                )}
-              </div>
-
-              {/* Chat Details */}
-              <div className="flex flex-col flex-grow min-w-0">
-                <h2 className="text-lg font-semibold text-gray-800 truncate">
-                  {participant.username}
-                </h2>
-                <div className="flex items-center space-x-2">
-                  {/* Ticks */}
-                  {chat?.lastMessage && (
-                    <>
-                      {chat?.lastMessage?.sender?.toString() === user.id.toString() ? (
-                        chat?.lastMessage.isRead ? (
-                          <svg
-                            className="w-4 h-4 text-red-500 flex-shrink-0"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M10 15l-5-5 1.41-1.41L10 12.17l7.59-7.59L19 6l-9 9z" />
-                            <path
-                              d="M13 15l-5-3 1.41-1.41L13 12.17l7.59-7.59L22 6l-7 7z"
-                              transform="translate(2, 0)"
-                            />
-                          </svg>
-                        ) : (
-                          <svg
-                            className="w-4 h-4 text-gray-400 flex-shrink-0"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M10 15l-5-5 1.41-1.41L10 12.17l7.59-7.59L19 6l-9 9z" />
-                            <path
-                              d="M13 15l-5-3 1.41-1.41L13 12.17l7.59-7.59L22 6l-7 7z"
-                              transform="translate(2, 0)"
-                            />
-                          </svg>
-                        )
-                      ) : null}
-                    </>
+        {chat.participants.map(
+          (participant) =>
+            participant._id !== user.id && (
+              <React.Fragment key={participant._id}>
+                {/* Profile Picture */}
+                <div className="relative w-14 h-14 flex-shrink-0">
+                  <img
+                    src={
+                      participant.profilePicture ||
+                      "https://i.pinimg.com/236x/00/80/ee/0080eeaeaa2f2fba77af3e1efeade565.jpg"
+                    }
+                    alt={`${participant.username}'s avatar`}
+                    className="w-full h-full rounded-full shadow-lg object-cover"
+                  />
+                  {participant.onlineStatus && (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
                   )}
-                  <p className="text-sm text-gray-600 truncate">
-                    {chat?.lastMessage?.message || "No messages yet"}
-                  </p>
                 </div>
-              </div>
 
-              {/* Message Info */}
-              <div className="flex flex-col items-end space-y-1 flex-shrink-0">
-                <p className="text-xs text-gray-500 whitespace-nowrap">
-                  {chat?.lastMessage?.createdAt
-                    ? new Date(chat.lastMessage.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : ""}
-                </p>
-                {participant.unreadMessagesCount > 0 &&
-                  selectedChat?._id.toString() !== chat?._id.toString() && (
-                    <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-full">
-                      {participant.unreadMessagesCount}
-                    </span>
-                  )}
-              </div>
-            </React.Fragment>
-          ) : null
+                {/* Chat Details */}
+                <div className="flex flex-col flex-grow min-w-0">
+                  <h2 className="text-lg font-semibold text-gray-800 truncate">
+                    {participant.username}
+                  </h2>
+                  <div className="flex items-center space-x-2">
+                    {/* Ticks */}
+                    {chat?.lastMessage && (
+                      <>
+                        {chat?.lastMessage?.sender?.toString() ===
+                        user.id.toString() ? (
+                          chat?.lastMessage.isRead ? (
+                            <svg
+                              className="w-4 h-4 text-red-500 flex-shrink-0"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path d="M10 15l-5-5 1.41-1.41L10 12.17l7.59-7.59L19 6l-9 9z" />
+                              <path
+                                d="M13 15l-5-3 1.41-1.41L13 12.17l7.59-7.59L22 6l-7 7z"
+                                transform="translate(2, 0)"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="w-4 h-4 text-gray-400 flex-shrink-0"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path d="M10 15l-5-5 1.41-1.41L10 12.17l7.59-7.59L19 6l-9 9z" />
+                              <path
+                                d="M13 15l-5-3 1.41-1.41L13 12.17l7.59-7.59L22 6l-7 7z"
+                                transform="translate(2, 0)"
+                              />
+                            </svg>
+                          )
+                        ) : null}
+                      </>
+                    )}
+                    <p className="text-sm text-gray-600 truncate">
+                      {chat?.lastMessage?.message || "No messages yet"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Message Info */}
+                <div className="flex flex-col items-end space-y-1 flex-shrink-0">
+                  <p className="text-xs text-gray-500 whitespace-nowrap">
+                    {chat?.lastMessage?.createdAt
+                      ? new Date(chat.lastMessage.createdAt).toLocaleTimeString(
+                          [],
+                          { hour: "2-digit", minute: "2-digit" }
+                        )
+                      : ""}
+                  </p>
+                  {participant.unreadMessagesCount > 0 &&
+                    selectedChat?._id.toString() !== chat?._id.toString() && (
+                      <span className="inline-block px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-full">
+                        {participant.unreadMessagesCount}
+                      </span>
+                    )}
+                </div>
+              </React.Fragment>
+            )
         )}
       </div>
-    ))):<p className="flex items-center justify-center w-full h-full text-center text-gray-500">No chats found</p>}
-  </div>
+    ))
+  )}
+</div>
+
+
 </div>
 
 
@@ -467,9 +477,7 @@ const Messages = () => {
   className="flex-grow bg-no-repeat overflow-y-auto p-4 bg-gray-50 rounded-xl shadow-inner"
   ref={chatContainerRef}
   style={{
-    backgroundImage: `
-      url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')
-    `,
+    backgroundColor:'#e4d8ed',
     backgroundSize: 'cover', // Ensures it stays at its natural size
     backgroundRepeat: 'no-repeat', // Stops repetition
     backgroundPosition: 'center center', // Places the watermark in the exact center
@@ -582,7 +590,7 @@ const Messages = () => {
         </div>
       </div>
       <div className="p-4 bg-gray-100 text-center text-sm text-gray-500 border-t border-gray-300">
-        Messages are end-to-end encrypted. Only you and the recipient can read them.
+        Enjoy your study with StudyMate!
       </div>
     </>
   );

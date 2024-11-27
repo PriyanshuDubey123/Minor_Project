@@ -86,7 +86,7 @@ function AdminHomePage() {
 
   const handleSignOut = () => {
     // Implement your sign out logic here
-    navigate('/logout');
+    navigate('/logout?admin=true');
     setIsDropdownOpen(false); // Close dropdown after sign out
   };
 
@@ -259,7 +259,7 @@ function AdminHomePage() {
           {/* Course List */}
           <div className={`${currentVideo ? 'w-full lg:w-1/3' : 'w-full'} transition-all duration-300 h-full overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-gray-200`}>
             <div className={`${currentVideo ? 'flex flex-col space-y-4' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
-              {currentCourses.map((course) => (
+              {(currentCourses && currentCourses.length>0) ? currentCourses.map((course) => (
                 <div
                   key={course._id}
                   className={`bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-105 w-full sm:w-72 md:w-80 lg:w-96 ${currentCourse?._id === course._id ? 'border-4 border-purple-500' : ''}`}
@@ -343,7 +343,7 @@ function AdminHomePage() {
                     )}
                   </div>
                 </div>
-              ))}
+              )):<p className='w-[98vw] text-gray-500 font-semibold text-center'>No Courses Found</p>}
             </div>
 
             {/* Pagination Controls */}

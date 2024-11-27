@@ -165,7 +165,7 @@ const LearningPanel = () => {
   isOpen={ratingModalIsOpen}
   onRequestClose={closeRatingModal}
   className="relative bg-white rounded-lg p-6 w-full max-w-md mx-auto z-[1000]"
-  overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+  overlayClassName="fixed inset-0 bg-white bg-opacity-10 flex items-center justify-center"
 >
   <div>
     <h2 className="text-2xl font-semibold mb-4 text-center">Rate This Course</h2>

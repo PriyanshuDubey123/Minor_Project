@@ -17,10 +17,8 @@ import AdminHomePage from './pages/AdminHomePage';
 import AdminCourseForm from './features/admin/components/AdminCourseForm';
 import AdminOrdersPage from './pages/AdminOrdersPage';
 import Cart from './features/cart/Cart';
-import Checkout from './pages/Checkout';
 import { OrderSuccessPage } from './pages/OrderSuccessPage';
 import UserOrdersPage from './pages/UserOrdersPage';
-import StripeCheckOut from './pages/StripeCheckOut';
 import UserProfilePage from './pages/UserProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import AddCourse from './pages/AddCourse';
@@ -42,6 +40,8 @@ import { selectAdminLoginInfo, setAdminLoginInfo } from './features/admin/compon
 import Friends from './pages/Friends';
 import LiveStream from './pages/LiveStream';
 import LiveClass from './pages/LiveClass';
+import useNetworkStatus from './utils/CustomHooks';
+import OfflinePage from './utils/OfflinePage';
 
 const router = createBrowserRouter([
   {
@@ -143,22 +143,8 @@ const router = createBrowserRouter([
     path: '/order-success/:id',
     element: <OrderSuccessPage />,
   },
-  {
-    path: '/checkout',
-    element: (
-      <Protected>
-        <Checkout />
-      </Protected>
-    ),
-  },
-  {
-    path: '/stripe-checkout',
-    element: (
-      <Protected>
-        <StripeCheckOut />
-      </Protected>
-    ),
-  },
+
+ 
   {
     path: '/profile',
     element: (
@@ -206,6 +192,13 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+
+
+const isOnline = useNetworkStatus();
+
+
+
+
   const dispatch = useDispatch();
   const user = useSelector(selectLoggedInUser);
 
@@ -249,7 +242,14 @@ function App() {
             
            
   }, []);
+
   
+  if (!isOnline) {
+    return (
+     <OfflinePage/>
+    );
+  }
+
   
   return (
     
